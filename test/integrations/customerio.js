@@ -1,14 +1,12 @@
 
 describe('Customer.io', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Customerio = require('integrations/lib/customerio');
   var equal = require('equals');
-  var group = require('analytics/lib/group');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var user = require('analytics/lib/user');
-  var when = require('when');
 
   var customerio;
   var settings = {
@@ -16,13 +14,14 @@ describe('Customer.io', function () {
   };
 
   beforeEach(function () {
-    customerio = new Customerio(settings);
+    analytics.use(Customerio);
+    customerio = new Customerio.Integration(settings);
     customerio.initialize(); // noop
   });
 
   afterEach(function () {
     customerio.reset();
-    user.reset();
+    analytics.user().reset();
   });
 
   it('should have the right settings', function () {
@@ -60,7 +59,8 @@ describe('Customer.io', function () {
 
     it('should set window._cio.pageHasLoaded', function (done) {
       assert(!window._cio.pageHasLoaded);
-      customerio.load(function () {
+      customerio.load(function (err) {
+        if (err) return done(err);
         assert(window._cio.pageHasLoaded);
         done();
       });
@@ -69,11 +69,11 @@ describe('Customer.io', function () {
 
   describe('#identify', function () {
     beforeEach(function (done) {
+      customerio.initialize();
       customerio.once('load', function () {
         window._cio.identify = sinon.spy();
         setTimeout(done, 50);
       });
-      customerio.initialize();
     });
 
     it('should send an id', function () {
@@ -112,12 +112,12 @@ describe('Customer.io', function () {
 
   describe('#group', function () {
     beforeEach(function (done) {
-      user.identify('id');
+      analytics.user().identify('id');
+      customerio.initialize();
       customerio.once('load', function () {
         window._cio.identify = sinon.spy();
         setTimeout(done, 50);
       });
-      customerio.initialize();
     });
 
     it('should send an id', function () {
@@ -151,11 +151,11 @@ describe('Customer.io', function () {
 
   describe('#track', function () {
     beforeEach(function (done) {
+      customerio.initialize();
       customerio.once('load', function () {
         window._cio.track = sinon.spy();
         setTimeout(done, 50);
       });
-      customerio.initialize();
     });
 
     it('should send an event', function () {

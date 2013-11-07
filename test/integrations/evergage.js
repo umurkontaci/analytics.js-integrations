@@ -1,13 +1,13 @@
 
 describe('Evergage', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Evergage = require('integrations/lib/evergage');
   var equal = require('equals');
   var jquery = require('jquery');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var evergage;
   var settings = {
@@ -16,7 +16,8 @@ describe('Evergage', function () {
   };
 
   beforeEach(function () {
-    evergage = new Evergage(settings);
+    analytics.use(Evergage);
+    evergage = new Evergage.Integration(settings);
     evergage.initialize(); // noop
   });
 
@@ -83,12 +84,9 @@ describe('Evergage', function () {
   });
 
   describe('#identify', function () {
-    beforeEach(function (done) {
-      evergage.once('load', function () {
-        window._aaq.push = sinon.spy();
-        done();
-      });
+    beforeEach(function () {
       evergage.initialize();
+      window._aaq.push = sinon.spy();
     });
 
     it('should send an id', function () {
@@ -121,12 +119,9 @@ describe('Evergage', function () {
   });
 
   describe('#group', function () {
-    beforeEach(function (done) {
-      evergage.once('load', function () {
-        window._aaq.push = sinon.spy();
-        done();
-      });
+    beforeEach(function () {
       evergage.initialize();
+      window._aaq.push = sinon.spy();
     });
 
     it('should send an id', function () {
@@ -147,12 +142,9 @@ describe('Evergage', function () {
   });
 
   describe('#track', function () {
-    beforeEach(function (done) {
-      evergage.once('load', function () {
-        window._aaq.push = sinon.spy();
-        done();
-      });
+    beforeEach(function () {
       evergage.initialize();
+      window._aaq.push = sinon.spy();
     });
 
     it('should send an event', function () {

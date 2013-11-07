@@ -1,11 +1,11 @@
 
 describe('Awesomatic', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Awesomatic = require('integrations/lib/awesomatic');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var awesomatic;
   var settings = {
@@ -13,7 +13,8 @@ describe('Awesomatic', function () {
   };
 
   beforeEach(function () {
-    awesomatic = new Awesomatic(settings);
+    analytics.use(Awesomatic);
+    awesomatic = new Awesomatic.Integration(settings);
     awesomatic.initialize(); // noop
   });
 
@@ -38,27 +39,18 @@ describe('Awesomatic', function () {
   });
 
   describe('#load', function () {
-    after(function () {
-      window.Awesomatic = undefined;
-    });
-
     it('should create window.Awesomatic', function (done) {
-      awesomatic.load();
-      when(function () { return window.Awesomatic; }, done);
-    });
-
-    it('should callback', function (done) {
-      awesomatic.load(done);
+      awesomatic.load(function (err) {
+        if (err) return done(err);
+        assert(window.Awesomatic);
+        done();
+      });
     });
   });
 
   describe('#identify', function () {
-    beforeEach(function (done) {
-      awesomatic.initialize();
-      awesomatic.once('ready', function () {
-        window.Awesomatic.load = sinon.spy();
-        done();
-      });
+    beforeEach(function () {
+      window.Awesomatic = { load: sinon.spy() };
     });
 
     it('should send an id', function () {

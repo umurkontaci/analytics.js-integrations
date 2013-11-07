@@ -1,13 +1,12 @@
 
 describe('Get Satisfaction', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var GetSatisfaction = require('integrations/lib/get-satisfaction');
-  var jquery = require('jquery');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var getsatisfaction;
   var settings = {
@@ -15,7 +14,8 @@ describe('Get Satisfaction', function () {
   };
 
   beforeEach(function () {
-    getsatisfaction = new GetSatisfaction(settings);
+    analytics.use(GetSatisfaction);
+    getsatisfaction = new GetSatisfaction.Integration(settings);
     getsatisfaction.initialize(); // noop
   });
 
@@ -33,13 +33,16 @@ describe('Get Satisfaction', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      getsatisfaction.load = sinon.spy();
+    });
+
     it('should add the get satisfaction widget to the dom', function () {
       getsatisfaction.initialize();
       assert(document.getElementById('getsat-widget-' + settings.widgetId));
     });
 
     it('should call #load', function () {
-      getsatisfaction.load = sinon.spy();
       getsatisfaction.initialize();
       assert(getsatisfaction.load.called);
     });
@@ -48,12 +51,11 @@ describe('Get Satisfaction', function () {
   describe('#load', function () {
     it('should create window.GSFN', function (done) {
       assert(!window.GSFN);
-      getsatisfaction.load();
-      when(function () { return window.GSFN; }, done);
-    });
-
-    it('should callback', function (done) {
-      getsatisfaction.load(done);
+      getsatisfaction.load(function (err) {
+        if (err) return done(err);
+        assert(window.GSFN);
+        done();
+      });
     });
   });
 

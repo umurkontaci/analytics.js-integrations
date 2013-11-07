@@ -1,12 +1,12 @@
 
 describe('Lytics', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Lytics = require('integrations/lib/lytics');
   var sinon = require('sinon');
   var test = require('integration-tester');
   var tick = require('next-tick');
-  var when = require('when');
 
   var lytics;
   var settings = {
@@ -15,7 +15,8 @@ describe('Lytics', function () {
   };
 
   beforeEach(function () {
-    lytics = new Lytics(settings);
+    analytics.use(Lytics);
+    lytics = new Lytics.Integration(settings);
     lytics.initialize(); // noop
   });
 
@@ -38,6 +39,10 @@ describe('Lytics', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      sinon.stub(lytics, 'load');
+    });
+
     it('should create window.jstag', function () {
       assert(!window.jstag);
       lytics.initialize();
@@ -45,7 +50,6 @@ describe('Lytics', function () {
     });
 
     it('should call #load', function () {
-      lytics.load = sinon.spy();
       lytics.initialize();
       assert(lytics.load.called);
     });
@@ -53,13 +57,11 @@ describe('Lytics', function () {
 
   describe('#load', function () {
     it('should create window.jstag.bind', function (done) {
-      assert(!window.jstag);
-      lytics.load();
-      when(function () { return window.jstag && window.jstag.bind; }, done);
-    });
-
-    it('should callback', function (done) {
-      lytics.load(done);
+      lytics.load(function (err) {
+        if (err) return done(err);
+        assert(window.jstag.bind);
+        done();
+      });
     });
   });
 

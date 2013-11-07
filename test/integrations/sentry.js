@@ -1,11 +1,11 @@
 
 describe('Sentry', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Sentry = require('integrations/lib/sentry');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var sentry;
   var settings = {
@@ -13,7 +13,12 @@ describe('Sentry', function () {
   };
 
   beforeEach(function () {
-    sentry = new Sentry(settings);
+    analytics.use(Sentry);
+    sentry = new Sentry.Integration(settings);
+  });
+
+  afterEach(function () {
+    sentry.reset();
   });
 
   it('should have the right settings', function () {
@@ -48,8 +53,12 @@ describe('Sentry', function () {
   });
 
   describe('#identify', function () {
-    beforeEach(function () {
-      window.Raven.setUser = sinon.spy();
+    beforeEach(function (done) {
+      sentry.initialize();
+      sentry.once('load', function () {
+        window.Raven.setUser = sinon.spy();
+        done();
+      });
     });
 
     it('should send an id', function () {

@@ -1,12 +1,12 @@
 
 describe('ClickTale', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var ClickTale = require('integrations/lib/clicktale');
   var date = require('load-date');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var clicktale;
   var settings = {
@@ -16,7 +16,8 @@ describe('ClickTale', function () {
   };
 
   beforeEach(function () {
-    clicktale = new ClickTale(settings);
+    analytics.use(ClickTale);
+    clicktale = new ClickTale.Integration(settings);
     clicktale.initialize(); // noop
   });
 
@@ -59,12 +60,11 @@ describe('ClickTale', function () {
   describe('#load', function () {
     it('should create window.ClickTale', function (done) {
       assert(!window.ClickTale);
-      clicktale.load();
-      when(function () { return window.ClickTale; }, done);
-    });
-
-    it('should callback', function (done) {
-      clicktale.load(done);
+      clicktale.load(function (err) {
+        if (err) return done(err);
+        assert(window.ClickTale);
+        done();
+      });
     });
   });
 

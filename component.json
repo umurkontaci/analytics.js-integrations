@@ -37,6 +37,7 @@
     "ianstormtaylor/assert": "*",
     "ianstormtaylor/sinon": "*",
     "jkroso/equals": "*",
+    "segmentio/analytics.js": "page",
     "segmentio/analytics.js-integration-tester": "*",
     "segmentio/when": "*",
     "timoxley/next-tick": "*"

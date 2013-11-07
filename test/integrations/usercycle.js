@@ -1,12 +1,12 @@
 
 describe('USERcycle', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
   var USERcycle = require('integrations/lib/usercycle');
-  var when = require('when');
 
   var usercycle;
   var settings = {
@@ -14,7 +14,8 @@ describe('USERcycle', function () {
   };
 
   beforeEach(function () {
-    usercycle = new USERcycle(settings);
+    analytics.use(USERcycle);
+    usercycle = new USERcycle.Integration(settings);
     usercycle.initialize(); // noop
   });
 

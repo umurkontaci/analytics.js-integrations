@@ -1,6 +1,7 @@
 
 describe('Tapstream', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var sinon = require('sinon');
@@ -13,7 +14,8 @@ describe('Tapstream', function () {
   };
 
   beforeEach(function () {
-    tapstream = new Tapstream(settings);
+    analytics.use(Tapstream);
+    tapstream = new Tapstream.Integration(settings);
     tapstream.initialize(); // noop
   });
 

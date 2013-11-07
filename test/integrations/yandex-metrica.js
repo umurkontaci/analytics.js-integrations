@@ -1,10 +1,11 @@
 
 describe('Yandex Metrica', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
+  var tick = require('next-tick');
   var Yandex = require('integrations/lib/yandex-metrica');
 
   var yandex;
@@ -13,7 +14,8 @@ describe('Yandex Metrica', function () {
   };
 
   beforeEach(function () {
-    yandex = new Yandex(settings);
+    analytics.use(Yandex);
+    yandex = new Yandex.Integration(settings);
     yandex.initialize(); // noop
   });
 
@@ -33,34 +35,45 @@ describe('Yandex Metrica', function () {
     });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      yandex.load = sinon.spy();
+    });
+
     it('should push onto the yandex_metrica_callbacks', function () {
       assert(!window.yandex_metrika_callbacks);
       yandex.initialize();
       assert(window.yandex_metrika_callbacks.length === 1);
     });
 
-    it('should create a yaCounter object', function (done) {
-      var id = yandex.options.counterId;
-      yandex.initialize();
-      when(function () { return window['yaCounter' + id]; }, done);
-    });
-
     it('should call #load', function () {
-      yandex.load = sinon.spy();
       yandex.initialize();
       assert(yandex.load.called);
     });
   });
 
   describe('#load', function () {
-    it('should create the window.Ya.Metrika variable', function (done) {
-      assert(!window.Ya);
-      yandex.load();
-      when(function () { return window.Ya && window.Ya.Metrika; }, done);
+    beforeEach(function () {
+      sinon.stub(yandex, 'load');
+      yandex.initialize();
+      yandex.load.restore();
     });
 
-    it('should callback', function (done) {
-      yandex.load(done);
+    it('should create the window.Ya.Metrika variable', function (done) {
+      yandex.load(function (err) {
+        if (err) return done(err);
+        assert(window.Ya.Metrika);
+        done();
+      });
+    });
+
+    it('should create a yaCounter object', function (done) {
+      yandex.load(function (err) {
+        if (err) return done(err);
+        tick(function () {
+          assert(window['yaCounter' + yandex.options.counterId]);
+          done();
+        });
+      });
     });
   });
 

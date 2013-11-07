@@ -1,11 +1,11 @@
 
 describe('comScore', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Comscore = require('integrations/lib/comscore');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var comscore;
   var settings = {
@@ -13,7 +13,8 @@ describe('comScore', function () {
   };
 
   beforeEach(function () {
-    comscore = new Comscore(settings);
+    analytics.use(Comscore);
+    comscore = new Comscore.Integration(settings);
     comscore.initialize(); // noop
   });
 
@@ -32,6 +33,10 @@ describe('comScore', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      comscore.load = sinon.spy();
+    });
+
     it('should create window._comscore', function () {
       assert(!window._comscore);
       comscore.initialize();
@@ -39,7 +44,6 @@ describe('comScore', function () {
     });
 
     it('should call #load', function () {
-      comscore.load = sinon.spy();
       comscore.initialize();
       assert(comscore.load.called);
     });
@@ -48,12 +52,11 @@ describe('comScore', function () {
   describe('#load', function () {
     it('should create window.COMSCORE', function (done) {
       assert(!window.COMSCORE);
-      comscore.load();
-      when(function () { return window.COMSCORE; }, done);
-    });
-
-    it('should callback', function (done) {
-      comscore.load(done);
+      comscore.load(function (err) {
+        if (err) return done(err);
+        assert(window.COMSCORE);
+        done();
+      });
     });
   });
 

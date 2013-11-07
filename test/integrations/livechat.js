@@ -1,12 +1,12 @@
 
 describe('LiveChat', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var LiveChat = require('integrations/lib/livechat');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var livechat;
   var settings = {
@@ -14,7 +14,8 @@ describe('LiveChat', function () {
   };
 
   beforeEach(function () {
-    livechat = new LiveChat(settings);
+    analytics.use(LiveChat);
+    livechat = new LiveChat.Integration(settings);
     livechat.initialize(); // noop
   });
 
@@ -32,6 +33,10 @@ describe('LiveChat', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      livechat.load = sinon.spy();
+    });
+
     it('should create window.__lc', function () {
       assert(!window.__lc);
       livechat.initialize();
@@ -39,7 +44,6 @@ describe('LiveChat', function () {
     });
 
     it('should call #load', function () {
-      livechat.load = sinon.spy();
       livechat.initialize();
       assert(livechat.load.called);
     });
@@ -48,19 +52,21 @@ describe('LiveChat', function () {
   describe('#load', function () {
     it('should create window.LC_API', function (done) {
       assert(!window.LC_API);
-      livechat.load();
-      when(function () { return window.LC_API; }, done);
-    });
-
-    it('should callback', function (done) {
-      livechat.load(done);
+      livechat.load(function (err) {
+        if (err) return done(err);
+        assert(window.LC_API);
+        done();
+      });
     });
   });
 
   describe('#identify', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       livechat.initialize();
-      window.LC_API.set_custom_variables = sinon.spy();
+      livechat.once('load', function () {
+        window.LC_API.set_custom_variables = sinon.spy();
+        done();
+      });
     });
 
     it('should send an id', function () {

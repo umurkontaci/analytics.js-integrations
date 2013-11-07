@@ -1,13 +1,13 @@
 
 describe('Vero', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
   var tick = require('next-tick');
   var Vero = require('integrations/lib/vero');
-  var when = require('when');
 
   var vero;
   var settings = {
@@ -15,7 +15,8 @@ describe('Vero', function () {
   };
 
   beforeEach(function () {
-    vero = new Vero(settings);
+    analytics.use(Vero);
+    vero = new Vero.Integration(settings);
     vero.initialize(); // noop
   });
 

@@ -2,6 +2,7 @@
 describe('Optimizely', function () {
 
   var Optimizely = require('integrations/lib/optimizely');
+  var analytics = require('analytics');
   var assert = require('assert');
   var sinon = require('sinon');
   var tick = require('next-tick');
@@ -10,13 +11,12 @@ describe('Optimizely', function () {
   var settings = {};
 
   beforeEach(function () {
+    analytics.use(Optimizely);
+    optimizely = new Optimizely.Integration(settings);
+    // setup fake optimizely experiment data
     window.optimizely.data = {
       experiments : { 0 : { name : 'Test' } },
       state : { variationNamesMap : { 0 : 'Variation' } }
-    };
-    optimizely = new Optimizely(settings);
-    optimizely.analytics = {
-      identify: sinon.spy()
     };
   });
 
@@ -46,9 +46,17 @@ describe('Optimizely', function () {
   });
 
   describe('#replay', function (done) {
+    beforeEach(function () {
+      sinon.stub(analytics, 'identify');
+    });
+
+    afterEach(function () {
+      analytics.identify.restore();
+    });
+
     it('should replay variation traits', function () {
       optimizely.replay();
-      assert(optimizely.analytics.identify.calledWith({
+      assert(analytics.identify.calledWith({
         'Experiment: Test': 'Variation'
       }));
     });
@@ -56,7 +64,7 @@ describe('Optimizely', function () {
 
   describe('#track', function () {
     beforeEach(function () {
-      window.optimizely = [];
+      optimizely.initialize();
       window.optimizely.push = sinon.spy();
     });
 

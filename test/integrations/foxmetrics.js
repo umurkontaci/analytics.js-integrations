@@ -1,12 +1,12 @@
 
 describe('FoxMetrics', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var FoxMetrics = require('integrations/lib/foxmetrics');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var foxmetrics;
   var settings = {
@@ -14,7 +14,8 @@ describe('FoxMetrics', function () {
   };
 
   beforeEach(function () {
-    foxmetrics = new FoxMetrics(settings);
+    analytics.use(FoxMetrics);
+    foxmetrics = new FoxMetrics.Integration(settings);
     foxmetrics.initialize(); // noop
   });
 
@@ -41,13 +42,11 @@ describe('FoxMetrics', function () {
 
   describe('#load', function () {
     it('should create window._fxm.appId', function (done) {
-      assert(!window._fxm);
-      foxmetrics.load();
-      when(function () { return window._fxm && window._fxm.appId; }, done);
-    });
-
-    it('should callback', function (done) {
-      foxmetrics.load(done);
+      foxmetrics.load(function (err) {
+        if (err) return done(err);
+        assert(window._fxm.appId);
+        done();
+      });
     });
   });
 
@@ -128,6 +127,7 @@ describe('FoxMetrics', function () {
       window._fxm.push = sinon.spy();
     });
 
+
     it('should send an event', function () {
       foxmetrics.track('event');
       assert(window._fxm.push.calledWith([
@@ -161,6 +161,7 @@ describe('FoxMetrics', function () {
       foxmetrics.initialize();
       window._fxm.push = sinon.spy();
     });
+
 
     it('should send a page view', function () {
       foxmetrics.page();

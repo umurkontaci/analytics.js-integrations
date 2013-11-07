@@ -1,11 +1,11 @@
 
 describe('LeadLander', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var LeadLander = require('integrations/lib/leadlander');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var leadlander;
   var settings = {
@@ -13,7 +13,8 @@ describe('LeadLander', function () {
   };
 
   beforeEach(function () {
-    leadlander = new LeadLander(settings);
+    analytics.use(LeadLander);
+    leadlander = new LeadLander.Integration(settings);
     leadlander.initialize(); // noop
   });
 
@@ -32,13 +33,16 @@ describe('LeadLander', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      leadlander.load = sinon.spy();
+    });
+
     it('should set window.llactid', function () {
       leadlander.initialize();
       assert(window.llactid === settings.accountId);
     });
 
     it('should call #load', function () {
-      leadlander.load = sinon.spy();
       leadlander.initialize();
       assert(leadlander.load.called);
     });
@@ -47,12 +51,11 @@ describe('LeadLander', function () {
   describe('#load', function () {
     it('should create window.trackalyzer', function (done) {
       assert(!window.trackalyzer);
-      leadlander.load();
-      when(function () { return window.trackalyzer; }, done);
-    });
-
-    it('should callback', function (done) {
-      leadlander.load(done);
+      leadlander.load(function (err) {
+        if (err) return done(err);
+        assert(window.trackalyzer);
+        done();
+      });
     });
   });
 

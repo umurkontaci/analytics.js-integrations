@@ -1,12 +1,12 @@
 
 describe('HitTail', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var HitTail = require('integrations/lib/hittail');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var hittail;
   var settings = {
@@ -14,7 +14,8 @@ describe('HitTail', function () {
   };
 
   beforeEach(function () {
-    hittal = new HitTail(settings);
+    analytics.use(HitTail);
+    hittal = new HitTail.Integration(settings);
     hittal.initialize(); // noop
   });
 
@@ -42,12 +43,11 @@ describe('HitTail', function () {
   describe('#load', function () {
     it('should create window.htk', function (done) {
       assert(!window.htk);
-      hittal.load();
-      when(function () { return window.htk; }, done);
-    });
-
-    it('should callback', function (done) {
-      hittal.load(done);
+      hittal.load(function (err) {
+        if (err) return done(err);
+        assert(window.htk);
+        done();
+      });
     });
   });
 

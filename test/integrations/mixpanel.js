@@ -1,11 +1,11 @@
 
 describe('Mixpanel', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Mixpanel = require('integrations/lib/mixpanel');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var mixpanel;
   var settings = {
@@ -13,7 +13,8 @@ describe('Mixpanel', function () {
   };
 
   beforeEach(function () {
-    mixpanel = new Mixpanel(settings);
+    analytics.use(Mixpanel);
+    mixpanel = new Mixpanel.Integration(settings);
     mixpanel.initialize(); // noop
   });
 
@@ -37,6 +38,10 @@ describe('Mixpanel', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      mixpanel.load = sinon.spy();
+    });
+
     it('should create window.mixpanel', function () {
       assert(!window.mixpanel);
       mixpanel.initialize();
@@ -44,20 +49,24 @@ describe('Mixpanel', function () {
     });
 
     it('should call #load', function () {
-      mixpanel.load = sinon.spy();
       mixpanel.initialize();
       assert(mixpanel.load.called);
     });
   });
 
   describe('#load', function () {
-    it('should create window.mixpanel.config', function (done) {
+    beforeEach(function () {
+      sinon.stub(mixpanel, 'load');
       mixpanel.initialize();
-      when(function () { return window.mixpanel && window.mixpanel.config; }, done);
+      mixpanel.load.restore();
     });
 
-    it('should callback', function (done) {
-      mixpanel.load(done);
+    it('should create window.mixpanel.config', function (done) {
+      mixpanel.load(function (err) {
+        if (err) return done(err);
+        assert(window.mixpanel.config);
+        done();
+      });
     });
   });
 

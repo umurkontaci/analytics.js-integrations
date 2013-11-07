@@ -2,12 +2,11 @@
 describe('AdRoll', function () {
 
   var AdRoll = require('integrations/lib/adroll');
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var user = require('analytics/lib/user');
-  var when = require('when');
 
   var adroll;
   var settings = {
@@ -16,13 +15,14 @@ describe('AdRoll', function () {
   };
 
   beforeEach(function () {
-    adroll = new AdRoll(settings);
+    analytics.use(AdRoll);
+    adroll = new AdRoll.Integration(settings);
     adroll.initialize(); // noop
   });
 
   afterEach(function () {
     adroll.reset();
-    user.reset();
+    analytics.user().reset();
   });
 
   it('should have the right settings', function () {
@@ -50,7 +50,7 @@ describe('AdRoll', function () {
     });
 
     it('should set custom data', function () {
-      user.identify('id', { trait: true });
+      analytics.user().identify('id', { trait: true });
       adroll.initialize();
       assert(equal(window.adroll_custom_data, { id: 'id', trait: true }));
     });

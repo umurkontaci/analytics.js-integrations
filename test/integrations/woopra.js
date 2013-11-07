@@ -1,10 +1,10 @@
 
 describe('Woopra', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
   var Woopra = require('integrations/lib/woopra');
 
   var woopra;
@@ -13,7 +13,8 @@ describe('Woopra', function () {
   };
 
   beforeEach(function () {
-    woopra = new Woopra(settings);
+    analytics.use(Woopra);
+    woopra = new Woopra.Integration(settings);
     woopra.initialize(); // noop
   });
 
@@ -31,6 +32,10 @@ describe('Woopra', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      woopra.load = sinon.spy();
+    });
+
     it('should create a woopra object', function () {
       assert(!window.woopra);
       woopra.initialize();
@@ -38,7 +43,6 @@ describe('Woopra', function () {
     });
 
     it('should call #load', function () {
-      woopra.load = sinon.spy();
       woopra.initialize();
       assert(woopra.load.called);
     });

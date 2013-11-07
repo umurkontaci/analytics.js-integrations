@@ -1,6 +1,7 @@
 
 describe('trak.io', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var each = require('each');
   var sinon = require('sinon');
@@ -15,7 +16,8 @@ describe('trak.io', function () {
   };
 
   beforeEach(function () {
-    trakio = new Trakio(settings);
+    analytics.use(Trakio);
+    trakio = new Trakio.Integration(settings);
     trakio.initialize(); // noop
   });
 
@@ -34,10 +36,8 @@ describe('trak.io', function () {
   });
 
   describe('#initialize', function () {
-    it('should call load', function () {
+    beforeEach(function () {
       trakio.load = sinon.spy();
-      trakio.initialize();
-      assert(trakio.load.called);
     });
 
     it('should set up the window.trak.io variables', function () {
@@ -47,22 +47,36 @@ describe('trak.io', function () {
       assert(window.trak.io.track);
       assert(window.trak.io.alias);
     });
+
+    it('should call #load', function () {
+      trakio.initialize();
+      assert(trakio.load.called);
+    });
   });
 
   describe('#load', function () {
+    beforeEach(function () {
+      sinon.stub(trakio, 'load');
+      trakio.initialize();
+      trakio.load.restore();
+    });
+
     it('should load the trak object', function (done) {
-      assert(!window.trak);
-      trakio.load();
-      when(function () {
-        return window.trak && window.trak.loaded;
-      }, done);
+      trakio.load(function (err) {
+        if (err) return done(err);
+        // doesn't load immediately
+        when(function () { return window.trak && window.trak.loaded; }, done);
+      });
     });
   });
 
   describe('#identify', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       trakio.initialize();
-      window.trak.io.identify = sinon.spy();
+      trakio.once('load', function () {
+        window.trak.io.identify = sinon.spy();
+        done();
+      });
     });
 
     it('should send id', function () {
@@ -95,9 +109,12 @@ describe('trak.io', function () {
   });
 
   describe('#track', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       trakio.initialize();
-      window.trak.io.track = sinon.spy();
+      trakio.once('load', function () {
+        window.trak.io.track = sinon.spy();
+        done();
+      });
     });
 
     it('should send an event', function () {
@@ -112,9 +129,12 @@ describe('trak.io', function () {
   });
 
   describe('#page', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       trakio.initialize();
-      window.trak.io.page_view = sinon.spy();
+      trakio.once('load', function () {
+        window.trak.io.page_view = sinon.spy();
+        done();
+      });
     });
 
     it('should call pageview', function () {
@@ -141,6 +161,7 @@ describe('trak.io', function () {
 
   describe('#alias', function () {
     beforeEach(function (done) {
+      trakio.initialize();
       trakio.once('load', function () {
         tick(function () {
           window.trak.io.distinct_id = sinon.stub();
@@ -148,7 +169,6 @@ describe('trak.io', function () {
           done();
         });
       });
-      trakio.initialize();
     });
 
     it('should send a new id', function () {

@@ -2,10 +2,10 @@
 describe('Perfect Audience', function () {
 
   var PerfectAudience = require('integrations/lib/perfect-audience');
+  var analytics = require('analytics');
   var assert = require('assert');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var pa;
   var settings = {
@@ -13,7 +13,8 @@ describe('Perfect Audience', function () {
   };
 
   beforeEach(function () {
-    pa = new PerfectAudience(settings);
+    analytics.use(PerfectAudience);
+    pa = new PerfectAudience.Integration(settings);
     pa.initialize(); // noop
   });
 
@@ -31,6 +32,10 @@ describe('Perfect Audience', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      pa.load = sinon.spy();
+    });
+
     it('should create the window._pa object', function () {
       assert(!window._pa);
       pa.initialize();
@@ -38,7 +43,6 @@ describe('Perfect Audience', function () {
     });
 
     it('should call #load', function () {
-      pa.load = sinon.spy();
       pa.initialize();
       assert(pa.load.called);
     });
@@ -46,20 +50,18 @@ describe('Perfect Audience', function () {
 
   describe('#load', function () {
     it('should create window._pa.track', function (done) {
-      pa.load();
-      when(function () { return window._pa && window._pa.track; }, done);
-    });
-
-    it('should callback', function (done) {
-      pa.load(done);
+      pa.load(function (err) {
+        if (err) return done(err);
+        assert(window._pa.track);
+        done();
+      });
     });
   });
 
   describe('#track', function () {
     beforeEach(function (done) {
       pa.initialize();
-      // wait for ready to ensure that calls aren't queued
-      pa.on('ready', function () {
+      pa.on('load', function () {
         window._pa.track = sinon.spy();
         done();
       });

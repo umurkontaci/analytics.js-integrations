@@ -1,12 +1,12 @@
 
 describe('Chartbeat', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Chartbeat = require('integrations/lib/chartbeat');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var chartbeat;
   var settings = {
@@ -15,7 +15,8 @@ describe('Chartbeat', function () {
   };
 
   beforeEach(function () {
-    chartbeat = new Chartbeat(settings);
+    analytics.use(Chartbeat);
+    chartbeat = new Chartbeat.Integration(settings);
     chartbeat.initialize(); // noop
   });
 
@@ -36,6 +37,10 @@ describe('Chartbeat', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      chartbeat.load = sinon.spy();
+    });
+
     it('should create window._sf_async_config', function () {
       chartbeat.initialize();
       assert(equal(window._sf_async_config, settings));
@@ -47,7 +52,6 @@ describe('Chartbeat', function () {
     });
 
     it('should call #load', function () {
-      chartbeat.load = sinon.spy();
       chartbeat.initialize();
       assert(chartbeat.load.called);
     });
@@ -55,18 +59,18 @@ describe('Chartbeat', function () {
 
   describe('#load', function () {
     it('should create window.pSUPERFLY', function (done) {
-      chartbeat.load();
-      when(function () { return window.pSUPERFLY; }, done);
+      chartbeat.load(function (err) {
+        if (err) return done(err);
+        assert(window.pSUPERFLY);
+        done();
+      });
     });
   });
 
   describe('#page', function () {
-    beforeEach(function (done) {
+    beforeEach(function () {
       chartbeat.initialize();
-      chartbeat.once('ready', function () {
-        window.pSUPERFLY.virtualPage = sinon.spy();
-        done();
-      });
+      window.pSUPERFLY = { virtualPage: sinon.spy() };
     });
 
     it('should send default url', function () {

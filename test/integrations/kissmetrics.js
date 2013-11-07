@@ -1,26 +1,29 @@
 
 describe('KISSmetrics', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var KISSmetrics = require('integrations/lib/kissmetrics');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var kissmetrics;
   var settings = {
     apiKey: '67f57ae9d61a6981fa07d141bec8c6c37e8b88c7'
   };
 
-  beforeEach(function () {
-    kissmetrics = new KISSmetrics(settings);
-    kissmetrics.initialize(); // noop
+  before(function (done) {
+    // setup global that tell kissmetrics to not fire jsonp breaking requests
     window.KM_DNT = true;
     window.KMDNTH = true;
-  });
 
-  afterEach(function () {
-    kissmetrics.reset();
+    analytics.use(KISSmetrics);
+    kissmetrics = new KISSmetrics.Integration(settings);
+    kissmetrics.initialize(); // noop
+
+    // initialize only once because kissmetrics has a bunch of timeouts
+    kissmetrics.once('load', done);
+    kissmetrics.initialize();
   });
 
   it('should have the right settings', function () {
@@ -35,45 +38,17 @@ describe('KISSmetrics', function () {
       .option('trackNamedPages', true);
   });
 
-  describe('#initialize', function () {
-    beforeEach(function () {
-      kissmetrics.load = sinon.spy();
-    });
-
-    it('should create window._kmq', function () {
-      assert(!window._kmq);
-      kissmetrics.initialize();
-      assert(window._kmq instanceof Array);
-    });
-
-    it('should call #load', function () {
-      kissmetrics.initialize();
-      assert(kissmetrics.load.called);
-    });
+  it('should create window._kmq', function () {
+    assert(window._kmq instanceof Array);
   });
 
-  describe('#load', function () {
-    beforeEach(function () {
-      sinon.stub(kissmetrics, 'load');
-      kissmetrics.initialize();
-      kissmetrics.load.restore();
-    });
-
-    it('should create window.KM', function (done) {
-      kissmetrics.load(function () {
-        assert(window.KM_KEY);
-        setTimeout(done, 1001);
-      });
-    });
+  it('should create window.KM', function () {
+    assert(window.KM);
   });
 
   describe('#identify', function () {
-    beforeEach(function (done) {
-      kissmetrics.once('load', function () {
-        window._kmq.push = sinon.spy();
-        setTimeout(done, 1001);
-      });
-      kissmetrics.initialize();
+    beforeEach(function () {
+      window._kmq.push = sinon.spy();
     });
 
     it('should send an id', function () {
@@ -94,12 +69,8 @@ describe('KISSmetrics', function () {
   });
 
   describe('#track', function () {
-    beforeEach(function (done) {
-      kissmetrics.once('load', function () {
-        window._kmq.push = sinon.spy();
-        setTimeout(done, 1001);
-      });
-      kissmetrics.initialize();
+    beforeEach(function () {
+      window._kmq.push = sinon.spy();
     });
 
     it('should send an event', function () {
@@ -119,12 +90,8 @@ describe('KISSmetrics', function () {
   });
 
   describe('#alias', function () {
-    beforeEach(function (done) {
-      kissmetrics.once('load', function () {
-        window._kmq.push = sinon.spy();
-        setTimeout(done, 1001);
-      });
-      kissmetrics.initialize();
+    beforeEach(function () {
+      window._kmq.push = sinon.spy();
     });
 
     it('should send a new id', function () {

@@ -1,12 +1,12 @@
 
 describe('awe.sm', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Awesm = require('integrations/lib/awesm');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var awesm;
   var settings = {
@@ -15,8 +15,10 @@ describe('awe.sm', function () {
   };
 
   beforeEach(function () {
-    awesm = new Awesm(settings);
+    analytics.use(Awesm);
+    awesm = new Awesm.Integration(settings);
     awesm.initialize(); // noop
+    // turn off the data capturing to prevent jsonp from breaking other tests
     window.AWESMEXTRA = { capture_data: false };
   });
 
@@ -58,7 +60,8 @@ describe('awe.sm', function () {
     });
 
     it('should set window.AWESM._exists', function (done) {
-      awesm.load(function () {
+      awesm.load(function (err) {
+        if (err) return done(err);
         assert(window.AWESM._exists);
         done();
       });
@@ -66,12 +69,8 @@ describe('awe.sm', function () {
   });
 
   describe('#track', function () {
-    beforeEach(function (done) {
-      awesm.on('load', function () {
-        window.AWESM.convert = sinon.spy();
-        done();
-      });
-      awesm.initialize();
+    beforeEach(function () {
+      window.AWESM = { convert: sinon.spy() };
     });
 
     it('should convert an event to a goal', function () {

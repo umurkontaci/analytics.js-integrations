@@ -2,11 +2,12 @@
 describe('Rollbar', function () {
 
   var Rollbar = require('integrations/lib/rollbar');
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
+  var noop = function(){};
   var test = require('integration-tester');
   var sinon = require('sinon');
-  var when = require('when');
 
   var rollbar;
   var settings = {
@@ -15,7 +16,8 @@ describe('Rollbar', function () {
   };
 
   beforeEach(function () {
-    rollbar = new Rollbar(settings);
+    analytics.use(Rollbar);
+    rollbar = new Rollbar.Integration(settings);
     rollbar.initialize(); // noop
   });
 
@@ -33,30 +35,17 @@ describe('Rollbar', function () {
       .option('identify', true);
   });
 
-  describe('#load', function () {
-    it('should call the callback', function (done) {
-      rollbar.load(done);
-    });
-
-    it('should set window._rollbar', function (done) {
-      window._rollbar = [settings.accessToken, settings];
-      rollbar.load();
-      when(function () {
-        return window._rollbar.push !== Array.prototype.push;
-      }, done);
-    });
-  });
-
   describe('#initialize', function () {
     var onerror;
 
-    before(function () {
+    beforeEach(function () {
+      sinon.stub(rollbar, 'load');
       // set up custom onerror so mocha won't complain
       onerror = window.onerror;
       window.onerror = function(){};
     });
 
-    after(function () {
+    afterEach(function () {
       window.onerror = onerror;
     });
 
@@ -69,9 +58,27 @@ describe('Rollbar', function () {
     });
 
     it('should call #load', function () {
-      rollbar.load = sinon.spy();
       rollbar.initialize();
       assert(rollbar.load.called);
+    });
+  });
+
+  describe('#load', function () {
+    beforeEach(function () {
+      sinon.stub(rollbar, 'load');
+      onerror = window.onerror;
+      window.onerror = noop;
+      rollbar.initialize();
+      window.onerror = onerror;
+      rollbar.load.restore();
+    });
+
+    it('should set window._rollbar', function (done) {
+      rollbar.load(function (err) {
+        if (err) return done(err);
+        assert(window._rollbar.push !== Array.prototype.push);
+        done();
+      });
     });
   });
 

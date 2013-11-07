@@ -1,12 +1,12 @@
 
 describe('Gauges', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var Gauges = require('integrations/lib/gauges');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var gauges;
   var settings = {
@@ -14,7 +14,8 @@ describe('Gauges', function () {
   };
 
   beforeEach(function () {
-    gauges = new Gauges(settings);
+    analytics.use(Gauges);
+    gauges = new Gauges.Integration(settings);
     gauges.initialize(); // noop
   });
 
@@ -32,6 +33,10 @@ describe('Gauges', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      gauges.load = sinon.spy();
+    });
+
     it('should create the gauges queue', function () {
       assert(!window._gauges);
       gauges.initialize();
@@ -39,22 +44,24 @@ describe('Gauges', function () {
     });
 
     it('should call #load', function () {
-      gauges.load = sinon.spy();
       gauges.initialize();
       assert(gauges.load.called);
     });
   });
 
   describe('#load', function () {
-    it('should replace the gauges queue', function (done) {
-      window._gauges = [];
-      var push = window._gauges.push;
-      gauges.load();
-      when(function () { return window._gauges.push !== push; }, done);
+    beforeEach(function () {
+      sinon.stub(gauges, 'load');
+      gauges.initialize();
+      gauges.load.restore();
     });
 
-    it('should callback', function (done) {
-      gauges.load(done);
+    it('should replace the gauges queue', function (done) {
+      gauges.load(function (err) {
+        if (err) return done(err);
+        assert(window._gauges.push !== Array.prototype.push);
+        done();
+      });
     });
   });
 

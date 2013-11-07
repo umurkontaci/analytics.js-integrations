@@ -28,7 +28,7 @@
       ui: 'bdd',
       ignoreLeaks: true,
       slow: 300,
-      timeout: 5000
+      timeout: 10000
     });
   </script>
   <script src="build/build.js"></script>
@@ -81,12 +81,13 @@
   <script src="test/integrations/userfox.js"></script>
   <script src="test/integrations/uservoice.js"></script>
   <script src="test/integrations/vero.js"></script>
-  <!--<script src="test/integrations/visual-website-optimizer.js"></script>-->
+  <script src="test/integrations/visual-website-optimizer.js"></script>
   <script src="test/integrations/woopra.js"></script>
   <script src="test/integrations/yandex-metrica.js"></script>
   <script>
     if (window.mochaPhantomJS) {
-      mochaPhantomJS.run()
+      require('debug').disable();
+      mochaPhantomJS.run();
     } else {
       require('debug').enable('*');
       mocha.run();

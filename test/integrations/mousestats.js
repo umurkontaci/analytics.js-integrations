@@ -1,12 +1,11 @@
 
 describe('MouseStats', function () {
 
-  var analytics = window.analytics || require('analytics');
+  var analytics = require('analytics');
   var assert = require('assert');
   var MouseStats = require('integrations/lib/mousestats');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var mousestats;
   var settings = {
@@ -14,7 +13,8 @@ describe('MouseStats', function () {
   };
 
   beforeEach(function () {
-    mousestats = new MouseStats(settings);
+    analytics.use(MouseStats);
+    mousestats = new MouseStats.Integration(settings);
     mousestats.initialize(); // noop
   });
 
@@ -42,12 +42,11 @@ describe('MouseStats', function () {
   describe('#load', function () {
     it('should create window.msaa', function (done) {
       assert(!window.msaa);
-      mousestats.load();
-      when(function () { return window.msaa; }, done);
-    });
-
-    it('should callback', function (done) {
-      mousestats.load(done);
+      mousestats.load(function (err) {
+        if (err) return done(err);
+        assert(window.msaa);
+        done();
+      });
     });
   });
 

@@ -1,12 +1,12 @@
 
 describe('Olark', function () {
 
-  var Olark = require('integrations/lib/olark');
+  var analytics = require('analytics');
   var assert = require('assert');
+  var Olark = require('integrations/lib/olark');
   var once = require('once');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var olark;
   var settings = {
@@ -24,7 +24,8 @@ describe('Olark', function () {
   }
 
   before(function () {
-    olark = new Olark(settings);
+    analytics.use(Olark);
+    olark = new Olark.Integration(settings);
     olark.initialize(); // noop
     olark.initialize();
   });

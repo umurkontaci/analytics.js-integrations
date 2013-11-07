@@ -1,13 +1,12 @@
 
 describe('GoSquared', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var GoSquared = require('integrations/lib/gosquared');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var user = require('analytics/lib/user');
-  var when = require('when');
 
   var gosquared;
   var settings = {
@@ -15,13 +14,14 @@ describe('GoSquared', function () {
   };
 
   beforeEach(function () {
-    gosquared = new GoSquared(settings);
+    analytics.use(GoSquared);
+    gosquared = new GoSquared.Integration(settings);
     gosquared.initialize(); // noop
   });
 
   afterEach(function () {
     gosquared.reset();
-    user.reset();
+    analytics.user().reset();
   });
 
   it('should have the right settings', function () {
@@ -34,6 +34,10 @@ describe('GoSquared', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      gosquared.load = sinon.spy();
+    });
+
     it('should initialize the gosquared globals', function () {
       assert(!window.GoSquared);
       gosquared.initialize();
@@ -51,14 +55,13 @@ describe('GoSquared', function () {
     });
 
     it('should identify an existing user', function () {
-      user.identify('id', { trait: true });
+      analytics.user().identify('id', { trait: true });
       gosquared.identify = sinon.spy();
       gosquared.initialize();
       assert(gosquared.identify.calledWith('id', { trait: true }));
     });
 
     it('should call #load', function () {
-      gosquared.load = sinon.spy();
       gosquared.initialize();
       assert(gosquared.load.called);
     });
@@ -67,19 +70,18 @@ describe('GoSquared', function () {
   describe('#load', function () {
     it('should create window._gs', function (done) {
       assert(!window._gs);
-      gosquared.load();
-      when(function () { return window._gs; }, done);
-    });
-
-    it('should callback', function (done) {
-      gosquared.load(done);
+      gosquared.load(function (err) {
+        if (err) return done(err);
+        assert(window._gs);
+        done();
+      });
     });
   });
 
   describe('#identify', function () {
     beforeEach(function (done) {
-      gosquared.once('ready', done);
       gosquared.initialize();
+      gosquared.once('load', done);
     });
 
     it('should set an id', function () {
@@ -116,11 +118,11 @@ describe('GoSquared', function () {
 
   describe('#track', function () {
     beforeEach(function (done) {
-      gosquared.once('ready', function () {
+      gosquared.initialize();
+      gosquared.once('load', function () {
         window.GoSquared.q.push = sinon.spy();
         done();
       });
-      gosquared.initialize();
     });
 
     it('should send an event', function () {
@@ -136,11 +138,11 @@ describe('GoSquared', function () {
 
   describe('#page', function () {
     beforeEach(function (done) {
-      gosquared.once('ready', function () {
+      gosquared.initialize();
+      gosquared.once('load', function () {
         window.GoSquared.q.push = sinon.spy();
         done();
       });
-      gosquared.initialize();
     });
     it('should send a pageview', function () {
       gosquared.page();

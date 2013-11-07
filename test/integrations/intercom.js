@@ -1,11 +1,11 @@
 
 describe('Intercom', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Intercom = require('integrations/lib/intercom');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var intercom;
   var settings = {
@@ -13,7 +13,8 @@ describe('Intercom', function () {
   };
 
   beforeEach(function () {
-    intercom = new Intercom(settings);
+    analytics.use(Intercom);
+    intercom = new Intercom.Integration(settings);
     intercom.initialize(); // noop
   });
 
@@ -44,12 +45,11 @@ describe('Intercom', function () {
   describe('#load', function () {
     it('should create window.Intercom', function (done) {
       assert(!window.Intercom);
-      intercom.load();
-      when(function () { return window.Intercom; }, done);
-    });
-
-    it('should callback', function (done) {
-      intercom.load(done);
+      intercom.load(function (err) {
+        if (err) return done(err);
+        assert(window.Intercom);
+        done();
+      });
     });
   });
 

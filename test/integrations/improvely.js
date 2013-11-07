@@ -1,12 +1,12 @@
 
 describe('Improvely', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var Improvely = require('integrations/lib/improvely');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var improvely;
   var settings = {
@@ -15,7 +15,8 @@ describe('Improvely', function () {
   };
 
   beforeEach(function () {
-    improvely = new Improvely(settings);
+    analytics.use(Improvely);
+    improvely = new Improvely.Integration(settings);
     improvely.initialize(); // noop
   });
 
@@ -35,6 +36,10 @@ describe('Improvely', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      improvely.load = sinon.spy();
+    });
+
     it('should create window._improvely', function () {
       assert(!window._improvely);
       improvely.initialize();
@@ -53,7 +58,6 @@ describe('Improvely', function () {
     });
 
     it('should call #load', function () {
-      improvely.load = sinon.spy();
       improvely.initialize();
       assert(improvely.load.called);
     });
@@ -62,19 +66,21 @@ describe('Improvely', function () {
   describe('#load', function () {
     it('should create window.improvely', function (done) {
       assert(!window.improvely);
-      improvely.load();
-      when(function () { return window.improvely && window.improvely.identify; }, done);
-    });
-
-    it('should callback', function (done) {
-      improvely.load(done);
+      improvely.load(function (err) {
+        if (err) return done(err);
+        assert(window.improvely);
+        done();
+      });
     });
   });
 
   describe('#identify', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       improvely.initialize();
-      window.improvely.label = sinon.spy();
+      improvely.on('load', function () {
+        window.improvely.label = sinon.spy();
+        done();
+      });
     });
 
     it('should send an id', function () {
@@ -84,9 +90,12 @@ describe('Improvely', function () {
   });
 
   describe('#track', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       improvely.initialize();
-      window.improvely.goal = sinon.spy();
+      improvely.on('load', function () {
+        window.improvely.goal = sinon.spy();
+        done();
+      });
     });
 
     it('should send an event', function () {

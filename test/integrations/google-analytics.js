@@ -1,6 +1,7 @@
 
 describe('Google Analytics', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var GA = require('integrations/lib/google-analytics');
@@ -8,7 +9,7 @@ describe('Google Analytics', function () {
   var test = require('integration-tester');
 
   it('should have the right settings', function () {
-    var ga = new GA();
+    var ga = new GA.Integration();
     test(ga)
       .name('Google Analytics')
       .readyOnLoad()
@@ -37,7 +38,8 @@ describe('Google Analytics', function () {
     };
 
     beforeEach(function () {
-      ga = new GA(settings);
+      analytics.use(GA);
+      ga = new GA.Integration(settings);
     });
 
     afterEach(function () {
@@ -229,7 +231,8 @@ describe('Google Analytics', function () {
     };
 
     beforeEach(function () {
-      ga = new GA(settings);
+      analytics.use(GA);
+      ga = new GA.Integration(settings);
     });
 
     afterEach(function () {

@@ -2,11 +2,11 @@
 describe('Amplitude', function () {
 
   var Amplitude = require('integrations/lib/amplitude');
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var amplitude;
   var settings = {
@@ -14,7 +14,9 @@ describe('Amplitude', function () {
   };
 
   beforeEach(function () {
-    amplitude = new Amplitude(settings);
+    analytics.use(Amplitude);
+    analytics.use(Amplitude);
+    amplitude = new Amplitude.Integration(settings);
     amplitude.initialize(); // noop
   });
 
@@ -34,6 +36,10 @@ describe('Amplitude', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      amplitude.load = sinon.spy();
+    });
+
     it('should create window.amplitude', function () {
       assert(!window.amplitude);
       amplitude.initialize();
@@ -41,7 +47,6 @@ describe('Amplitude', function () {
     });
 
     it('should call #load', function () {
-      amplitude.load = sinon.spy();
       amplitude.initialize();
       assert(amplitude.load.called);
     });
@@ -49,15 +54,11 @@ describe('Amplitude', function () {
 
   describe('#load', function () {
     it('should replace window.amplitude', function (done) {
-      assert(!window.amplitude);
-      amplitude.load();
-      when(function () {
-        return window.amplitude && window.amplitude.prototype !== Array.prototype;
-      }, done);
-    });
-
-    it('should callback', function (done) {
-      amplitude.load(done);
+      amplitude.load(function (err) {
+        if (err) return done(err);
+        assert(window.amplitude.prototype !== Array.prototype);
+        done();
+      });
     });
   });
 

@@ -1,6 +1,7 @@
 
 describe('Inspectlet', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var Inspectlet = require('integrations/lib/inspectlet');
@@ -14,7 +15,8 @@ describe('Inspectlet', function () {
   };
 
   beforeEach(function () {
-    inspectlet = new Inspectlet(settings);
+    analytics.use(Inspectlet);
+    inspectlet = new Inspectlet.Integration(settings);
     inspectlet.initialize(); // noop
   });
 

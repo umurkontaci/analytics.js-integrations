@@ -1,13 +1,12 @@
 
 describe('Clicky', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Clicky = require('integrations/lib/clicky');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var user = require('analytics/lib/user');
-  var when = require('when');
 
   var clicky;
   var settings = {
@@ -15,13 +14,15 @@ describe('Clicky', function () {
   };
 
   beforeEach(function () {
-    clicky = new Clicky(settings);
+    analytics.use(Clicky);
+    analytics.use(Clicky);
+    clicky = new Clicky.Integration(settings);
     clicky.initialize(); // noop
   });
 
   afterEach(function () {
     clicky.reset();
-    user.reset();
+    analytics.user().reset();
   });
 
   after(function () {
@@ -39,20 +40,23 @@ describe('Clicky', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      clicky.load = sinon.spy();
+    });
+
     it('should initialize the clicky global', function () {
       clicky.initialize();
       assert(equal(window.clicky_site_ids, [settings.siteId]));
     });
 
     it('should set custom data', function () {
-      user.identify('id', { trait: true });
+      analytics.user().identify('id', { trait: true });
       clicky.identify = sinon.spy();
       clicky.initialize();
       assert(clicky.identify.calledWith('id', { trait: true }));
     });
 
     it('should call #load', function () {
-      clicky.load = sinon.spy();
       clicky.initialize();
       assert(clicky.load.called);
     });
@@ -61,12 +65,11 @@ describe('Clicky', function () {
   describe('#load', function () {
     it('should create window.clicky', function (done) {
       assert(!window.clicky);
-      clicky.load();
-      when(function () { return window.clicky; }, done);
-    });
-
-    it('should callback', function (done) {
-      clicky.load(done);
+      clicky.load(function (err) {
+        if (err) return done(err);
+        assert(window.clicky);
+        done();
+      });
     });
   });
 
@@ -93,12 +96,8 @@ describe('Clicky', function () {
   });
 
   describe('#track', function () {
-    beforeEach(function (done) {
-      clicky.initialize();
-      clicky.once('ready', function () {
-        window.clicky.goal = sinon.spy();
-        done();
-      });
+    beforeEach(function () {
+      window.clicky = { goal: sinon.spy() };
     });
 
     it('should send an event', function () {
@@ -112,13 +111,10 @@ describe('Clicky', function () {
     });
   });
 
-  describe('#pageview', function () {
-    beforeEach(function (done) {
+  describe('#page', function () {
+    beforeEach(function () {
       clicky.initialize();
-      clicky.once('ready', function () {
-        window.clicky.log = sinon.spy();
-        done();
-      });
+      window.clicky = { log: sinon.spy() };
     });
 
     it('should send a path and name', function () {

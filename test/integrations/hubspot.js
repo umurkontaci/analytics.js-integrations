@@ -1,12 +1,12 @@
 
 describe('HubSpot', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var HubSpot = require('integrations/lib/hubspot');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var hubspot;
   var settings = {
@@ -14,7 +14,8 @@ describe('HubSpot', function () {
   };
 
   beforeEach(function () {
-    hubspot = new HubSpot(settings);
+    analytics.use(HubSpot);
+    hubspot = new HubSpot.Integration(settings);
     hubspot.initialize(); // noop
   });
 
@@ -32,6 +33,10 @@ describe('HubSpot', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      hubspot.load = sinon.spy();
+    });
+
     it('should create window._hsq', function () {
       assert(!window._hsq);
       hubspot.initialize();
@@ -39,7 +44,6 @@ describe('HubSpot', function () {
     });
 
     it('should call #load', function () {
-      hubspot.load = sinon.spy();
       hubspot.initialize();
       assert(hubspot.load.called);
     });
@@ -47,14 +51,11 @@ describe('HubSpot', function () {
 
   describe('#load', function () {
     it('should replace window._hsq.push', function (done) {
-      window._hsq = [];
-      var push = window._hsq.push;
-      hubspot.load();
-      when(function () { return window._hsq.push !== push; }, done);
-    });
-
-    it('should callback', function (done) {
-      hubspot.load(done);
+      hubspot.load(function (err) {
+        if (err) return done(err);
+        assert(window._hsq.push !== Array.prototype.push);
+        done();
+      });
     });
   });
 
@@ -82,15 +83,15 @@ describe('HubSpot', function () {
       }]));
     });
 
-    it('should convert date traits to ms timestamps', function () {
-      var date = '2013-11-04';
+    it('should convert dates to milliseconds', function () {
+      var date = new Date();
       hubspot.identify(null, {
         email: 'name@example.com',
         date: date
       });
       assert(window._hsq.push.calledWith(['identify', {
         email: 'name@example.com',
-        date: 1383523200000
+        date: date.getTime()
       }]));
     });
   });
@@ -103,7 +104,7 @@ describe('HubSpot', function () {
 
     it('should send an event', function () {
       hubspot.track('event');
-      assert(window._hsq.push.calledWith(['trackEvent', 'event', undefined]));
+      assert(window._hsq.push.calledWith(['trackEvent', 'event', {}]));
     });
 
     it('should send an event and properties', function () {
@@ -113,11 +114,11 @@ describe('HubSpot', function () {
       }]));
     });
 
-    it('should convert date properties to ms timestamps', function () {
-      var date = '2013-11-04';
+    it('should convert dates to milliseconds', function () {
+      var date = new Date();
       hubspot.track('event', { date: date });
       assert(window._hsq.push.calledWith(['trackEvent', 'event', {
-        date: 1383523200000
+        date: date.getTime()
       }]));
     });
   });

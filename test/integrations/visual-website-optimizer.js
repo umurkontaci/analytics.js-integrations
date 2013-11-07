@@ -1,21 +1,22 @@
 
 describe('Visual Website Optimizer', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var sinon = require('sinon');
   var test = require('integration-tester');
   var tick = require('next-tick');
-  var when = require('when');
   var VWO = require('integrations/lib/visual-website-optimizer');
 
   var vwo;
   var settings = {};
 
   beforeEach(function () {
+    analytics.use(VWO);
+    vwo = new VWO.Integration(settings);
     // set up fake VWO data to simulate the replay
     window._vwo_exp_ids = [1];
     window._vwo_exp = { 1: { comb_n: { 1: 'Variation' }, combination_chosen: 1 } };
-    vwo = new VWO(settings);
   });
 
   afterEach(function () {
@@ -35,10 +36,18 @@ describe('Visual Website Optimizer', function () {
       assert(vwo.replay.called);
       vwo.replay.restore();
     });
+  });
 
-    it('should replay variation data', function (done) {
-      throw new Error('to be implemented once analytics is removed');
+  describe('#replay', function () {
+    beforeEach(function () {
+      sinon.stub(analytics, 'identify');
     });
+
+    afterEach(function () {
+      analytics.identify.restore();
+    });
+
+    it('should replay variation data');
   });
 
 });

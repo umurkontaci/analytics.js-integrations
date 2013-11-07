@@ -1,6 +1,7 @@
 
 describe('UserVoice', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var extend = require('extend');
   var equal = require('equals');
@@ -17,7 +18,8 @@ describe('UserVoice', function () {
   };
 
   beforeEach(function () {
-    uservoice = new UserVoice(settings);
+    analytics.use(UserVoice);
+    uservoice = new UserVoice.Integration(settings);
     uservoice.initialize(); // noop
   });
 
@@ -80,7 +82,7 @@ describe('UserVoice', function () {
         when(function () { return jQuery('.uv-icon').length; }, done);
       });
 
-      it('should call load', function () {
+      it('should call #load', function () {
         uservoice.load = sinon.spy();
         uservoice.initialize();
         assert(uservoice.load.called);
@@ -235,7 +237,7 @@ describe('UserVoice', function () {
         assert(window.showClassicWidget);
       });
 
-      it('should call load', function () {
+      it('should call #load', function () {
         uservoice.initialize();
         assert(uservoice.load.called);
       });

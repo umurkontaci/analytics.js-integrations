@@ -1,12 +1,13 @@
 
 describe('Errorception', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var Errorception = require('integrations/lib/errorception');
+  var noop = function(){};
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var errorception;
   var settings = {
@@ -14,7 +15,8 @@ describe('Errorception', function () {
   };
 
   beforeEach(function () {
-    errorception = new Errorception(settings);
+    analytics.use(Errorception);
+    errorception = new Errorception.Integration(settings);
     errorception.initialize(); // noop
   });
 
@@ -35,13 +37,14 @@ describe('Errorception', function () {
   describe('#initialize', function () {
     var onerror;
 
-    before(function () {
+    beforeEach(function () {
+      sinon.stub(errorception, 'load');
       // set up custom onerror so mocha won't complain
       onerror = window.onerror;
-      window.onerror = function(){};
+      window.onerror = noop;
     });
 
-    after(function () {
+    afterEach(function () {
       window.onerror = onerror;
     });
 
@@ -59,23 +62,27 @@ describe('Errorception', function () {
     });
 
     it('should call #load', function () {
-      errorception.load = sinon.spy();
       errorception.initialize();
       assert(errorception.load.called);
     });
   });
 
   describe('#load', function () {
-    it('should create window._errs', function (done) {
-      assert(!window._errs);
-      window._errs = [];
-      var push = window._errs.push;
-      errorception.load();
-      when(function () { return window._errs && window._errs.push !== push; }, done);
+    beforeEach(function () {
+      sinon.stub(errorception, 'load');
+      onerror = window.onerror;
+      window.onerror = noop;
+      errorception.initialize();
+      window.onerror = onerror;
+      errorception.load.restore();
     });
 
-    it('should callback', function (done) {
-      errorception.load(done);
+    it('should create window._errs', function (done) {
+      errorception.load(function (err) {
+        if (err) return done(err);
+        assert(window._errs.push !== Array.prototype.push);
+        done();
+      });
     });
   });
 

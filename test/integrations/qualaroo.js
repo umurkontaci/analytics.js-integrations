@@ -1,6 +1,7 @@
 
 describe('Qualaroo', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Qualaroo = require('integrations/lib/qualaroo');
   var sinon = require('sinon');
@@ -14,7 +15,8 @@ describe('Qualaroo', function () {
   };
 
   beforeEach(function () {
-    qualaroo = new Qualaroo(settings);
+    analytics.use(Qualaroo);
+    qualaroo = new Qualaroo.Integration(settings);
     qualaroo.initialize(); // noop
   });
 
@@ -33,30 +35,42 @@ describe('Qualaroo', function () {
       .option('track', false);
   });
 
-  describe('#load', function () {
-    it('should create window._kiq', function (done) {
-      assert(!window._kiq);
-      qualaroo.load();
-      when(function () { return window._kiq; }, done);
+  describe('#initialize', function () {
+    beforeEach(function () {
+      qualaroo.load = sinon.spy();
     });
 
-    it('should callback', function (done) {
-      qualaroo.load(done);
+    it('should create window._kiq', function () {
+      assert(!window._kiq);
+      qualaroo.initialize();
+      assert(window._kiq);
+    });
+
+    it('should call #load', function () {
+      qualaroo.initialize();
+      assert(qualaroo.load.called);
     });
   });
 
-  describe('#initialize', function () {
-    it('should call #load', function () {
-      qualaroo.load = sinon.spy();
+  describe('#load', function () {
+    beforeEach(function () {
+      sinon.stub(qualaroo, 'load');
       qualaroo.initialize();
-      assert(qualaroo.load.called);
+      qualaroo.load.restore();
+    });
+
+    it('should create window._kiq', function (done) {
+      qualaroo.load(function (err) {
+        if (err) return done(err);
+        // it makes an extra ajax request to load itself
+        when(function () { return window._kiq.push !== Array.prototype.push; }, done);
+      });
     });
   });
 
   describe('#identify', function () {
     beforeEach(function () {
       qualaroo.initialize();
-      window._kiq = [];
       window._kiq.push = sinon.spy();
     });
 
@@ -85,7 +99,6 @@ describe('Qualaroo', function () {
   describe('#track', function () {
     beforeEach(function () {
       qualaroo.initialize();
-      window._kiq = [];
       window._kiq.push = sinon.spy();
     });
 

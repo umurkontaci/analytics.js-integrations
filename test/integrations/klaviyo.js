@@ -1,6 +1,7 @@
 
 describe('Klaviyo', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var Klaviyo = require('integrations/lib/klaviyo');
@@ -14,7 +15,8 @@ describe('Klaviyo', function () {
   };
 
   beforeEach(function () {
-    klaviyo = new Klaviyo(settings);
+    analytics.use(Klaviyo);
+    klaviyo = new Klaviyo.Integration(settings);
     klaviyo.initialize(); // noop
   });
 

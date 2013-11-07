@@ -1,12 +1,11 @@
 
 describe('Quantcast', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var Quantcast = require('integrations/lib/quantcast');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var user = require('analytics/lib/user');
-  var when = require('when');
 
   var quantcast;
   var settings = {
@@ -14,13 +13,14 @@ describe('Quantcast', function () {
   };
 
   beforeEach(function () {
-    quantcast = new Quantcast(settings);
+    analytics.use(Quantcast);
+    quantcast = new Quantcast.Integration(settings);
     quantcast.initialize(); // noop
   });
 
   afterEach(function () {
     quantcast.reset();
-    user.reset();
+    analytics.user().reset();
   });
 
   it('should have the right settings', function () {
@@ -34,13 +34,17 @@ describe('Quantcast', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      sinon.stub(quantcast, 'load');
+    });
+
     it('should push the pCode', function () {
       quantcast.initialize();
       assert(window._qevents[0].qacct === settings.pCode);
     });
 
     it('should push the user id', function () {
-      user.identify('id');
+      analytics.user().identify('id');
       quantcast.initialize();
       assert(window._qevents[0].uid === 'id');
     });
@@ -51,7 +55,6 @@ describe('Quantcast', function () {
     });
 
     it('should call #load', function () {
-      quantcast.load = sinon.spy(quantcast, 'load');
       quantcast.initialize();
       assert(quantcast.load.called);
     });
@@ -60,12 +63,11 @@ describe('Quantcast', function () {
   describe('#load', function () {
     it('should create window.__qc', function (done) {
       assert(!window.__qc);
-      quantcast.load();
-      when(function () { return window.__qc; }, done);
-    });
-
-    it('should callback', function (done) {
-      quantcast.load(done);
+      quantcast.load(function (err) {
+        if (err) return done(err);
+        assert(window.__qc);
+        done();
+      });
     });
   });
 
@@ -87,7 +89,7 @@ describe('Quantcast', function () {
     });
 
     it('should push the user id', function () {
-      user.identify('id');
+      analytics.user().identify('id');
       quantcast.page();
       var item = window._qevents[1];
       assert(item.uid === 'id');
@@ -129,7 +131,7 @@ describe('Quantcast', function () {
     });
 
     it('should push the user id', function () {
-      user.identify('id');
+      analytics.user().identify('id');
       quantcast.track('event');
       var item = window._qevents[1];
       assert(item.uid === 'id');

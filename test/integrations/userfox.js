@@ -1,11 +1,11 @@
 
 describe('userfox', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var sinon = require('sinon');
   var test = require('integration-tester');
   var Userfox = require('integrations/lib/userfox');
-  var when = require('when');
 
   var userfox;
   var settings = {
@@ -13,7 +13,8 @@ describe('userfox', function () {
   };
 
   beforeEach(function () {
-    userfox = new Userfox(settings);
+    analytics.use(Userfox);
+    userfox = new Userfox.Integration(settings);
     userfox.initialize(); // noop
   });
 
@@ -30,6 +31,10 @@ describe('userfox', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      userfox.load = sinon.spy();
+    });
+
     it('should create window._ufq', function () {
       assert(!window._ufq);
       userfox.initialize();
@@ -37,7 +42,6 @@ describe('userfox', function () {
     });
 
     it('should call #load', function () {
-      userfox.load = sinon.spy();
       userfox.initialize();
       assert(userfox.load.called);
     });
@@ -45,11 +49,11 @@ describe('userfox', function () {
 
   describe('#load', function () {
     it('should replace window._ufq.push', function (done) {
-      assert(!window._ufq);
-      userfox.load();
-      when(function () {
-        return window._ufq && window._ufq.push !== Array.prototype.push;
-      }, done);
+      userfox.load(function (err) {
+        if (err) return done(err);
+        assert(window._ufq.push !== Array.prototype.push);
+        done();
+      });
     });
   });
 

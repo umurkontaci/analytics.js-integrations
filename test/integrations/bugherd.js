@@ -1,12 +1,12 @@
 
 describe('BugHerd', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var BugHerd = require('integrations/lib/bugherd');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var bugherd;
   var settings = {
@@ -14,7 +14,8 @@ describe('BugHerd', function () {
   };
 
   beforeEach(function () {
-    bugherd = new BugHerd(settings);
+    analytics.use(BugHerd);
+    bugherd = new BugHerd.Integration(settings);
     bugherd.initialize(); // noop
   });
 
@@ -34,6 +35,10 @@ describe('BugHerd', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      bugherd.load = sinon.spy();
+    });
+
     it('should create window.BugHerdConfig', function () {
       bugherd.initialize();
       assert(equal(window.BugHerdConfig, { feedback: { hide: false }}));
@@ -46,7 +51,6 @@ describe('BugHerd', function () {
     });
 
     it('should call #load', function () {
-      bugherd.load = sinon.spy();
       bugherd.initialize();
       assert(bugherd.load.called);
     });
@@ -55,12 +59,11 @@ describe('BugHerd', function () {
   describe('#load', function () {
     it('should create window._bugHerd', function (done) {
       assert(!window._bugHerd);
-      bugherd.load();
-      when(function () { return window._bugHerd; }, done);
-    });
-
-    it('should callback', function (done) {
-      bugherd.load(done);
+      bugherd.load(function (err) {
+        if (err) return done(err);
+        assert(window._bugHerd);
+        done();
+      });
     });
   });
 

@@ -1,12 +1,12 @@
 
 describe('Crazy Egg', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var CrazyEgg = require('integrations/lib/crazy-egg');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var crazyegg;
   var settings = {
@@ -14,7 +14,8 @@ describe('Crazy Egg', function () {
   };
 
   beforeEach(function () {
-    crazyegg = new CrazyEgg(settings);
+    analytics.use(CrazyEgg);
+    crazyegg = new CrazyEgg.Integration(settings);
     crazyegg.initialize(); // noop
   });
 
@@ -42,12 +43,11 @@ describe('Crazy Egg', function () {
   describe('#load', function () {
     it('should create window.__adroll', function (done) {
       assert(!window.CE2);
-      crazyegg.load();
-      when(function () { return window.CE2; }, done);
-    });
-
-    it('should callback', function (done) {
-      crazyegg.load(done);
+      crazyegg.load(function (err) {
+        if (err) return done(err);
+        assert(window.CE2);
+        done();
+      });
     });
   });
 

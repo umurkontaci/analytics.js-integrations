@@ -2,12 +2,12 @@
 describe('Heap', function () {
 
   var analytics = window.analytics || require('analytics');
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var Heap = require('integrations/lib/heap');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var heap;
   var settings = {
@@ -15,7 +15,8 @@ describe('Heap', function () {
   };
 
   beforeEach(function () {
-    heap = new Heap(settings);
+    analytics.use(Heap);
+    heap = new Heap.Integration(settings);
     heap.initialize(); // noop
   });
 
@@ -34,6 +35,10 @@ describe('Heap', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      heap.load = sinon.spy();
+    });
+
     it('should create window.heap', function () {
       assert(!window.heap);
       heap.initialize();
@@ -47,7 +52,6 @@ describe('Heap', function () {
     });
 
     it('should call #load', function () {
-      heap.load = sinon.spy();
       heap.initialize();
       assert(heap.load.called);
     });
@@ -56,12 +60,11 @@ describe('Heap', function () {
   describe('#load', function () {
     it('should replace window.heap', function (done) {
       var global = window.heap = {};
-      heap.load();
-      when(function () { return window.heap != global; }, done);
-    });
-
-    it('should callback', function (done) {
-      heap.load(done);
+      heap.load(function (err) {
+        if (err) return done(err);
+        assert(window.heap !== global);
+        done();
+      });
     });
   });
 

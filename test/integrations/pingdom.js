@@ -2,12 +2,12 @@
 describe('Pingdom', function () {
 
   var Pingdom = require('integrations/lib/pingdom');
+  var analytics = require('analytics');
   var assert = require('assert');
   var date = require('load-date');
   var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var pingdom;
   var settings = {
@@ -15,7 +15,8 @@ describe('Pingdom', function () {
   };
 
   beforeEach(function () {
-    pingdom = new Pingdom(settings);
+    analytics.use(Pingdom);
+    pingdom = new Pingdom.Integration(settings);
     pingdom.initialize(); // noop
   });
 

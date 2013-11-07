@@ -1,12 +1,12 @@
 
 describe('Preact', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var Preact = require('integrations/lib/preact');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var preact;
   var settings = {
@@ -14,7 +14,8 @@ describe('Preact', function () {
   };
 
   beforeEach(function () {
-    preact = new Preact(settings);
+    analytics.use(Preact);
+    preact = new Preact.Integration(settings);
     preact.initialize(); // noop
   });
 

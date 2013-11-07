@@ -1,12 +1,12 @@
 
 describe('Keen IO', function () {
 
+  var analytics = require('analytics');
   var assert = require('assert');
   var equal = require('equals');
   var Keen = require('integrations/lib/keen-io');
   var sinon = require('sinon');
   var test = require('integration-tester');
-  var when = require('when');
 
   var keen;
   var settings = {
@@ -15,7 +15,8 @@ describe('Keen IO', function () {
   };
 
   beforeEach(function () {
-    keen = new Keen(settings);
+    analytics.use(Keen);
+    keen = new Keen.Integration(settings);
   });
 
   afterEach(function () {
@@ -35,6 +36,10 @@ describe('Keen IO', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      keen.load = sinon.spy();
+    });
+
     it('should create window.Keen', function () {
       assert(!window.Keen);
       keen.initialize();
@@ -51,7 +56,6 @@ describe('Keen IO', function () {
     });
 
     it('should call #load', function () {
-      keen.load = sinon.spy();
       keen.initialize();
       assert(keen.load.called);
     });
@@ -60,19 +64,18 @@ describe('Keen IO', function () {
   describe('#load', function () {
     it('should create window.Keen.Base64', function (done) {
       assert(!window.Keen);
-      keen.load();
-      when(function () { return window.Keen && window.Keen.Base64; }, done);
-    });
-
-    it('should callback', function (done) {
-      keen.load(done);
+      keen.load(function (err) {
+        if (err) return done(err);
+        assert(window.Keen);
+        done();
+      });
     });
   });
 
   describe('#identify', function () {
     beforeEach(function (done) {
-      keen.once('load', done);
       keen.initialize();
+      keen.once('load', done);
     });
 
     it('should pass an id', function () {
@@ -95,9 +98,12 @@ describe('Keen IO', function () {
   });
 
   describe('#track', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       keen.initialize();
-      window.Keen.addEvent = sinon.spy();
+      keen.once('load', function () {
+        window.Keen.addEvent = sinon.spy();
+        done();
+      });
     });
 
     it('should pass an event', function () {
@@ -112,9 +118,12 @@ describe('Keen IO', function () {
   });
 
   describe('#page', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       keen.initialize();
-      window.Keen.addEvent = sinon.spy();
+      keen.once('load', function () {
+        window.Keen.addEvent = sinon.spy();
+        done();
+      });
     });
 
     it('should not do anything by default', function () {
