@@ -28,6 +28,7 @@
     "segmentio/on-error": "0.1.0",
     "segmentio/to-unix-timestamp": "0.0.1",
     "segmentio/use-https": "0.1.0",
+    "timoxley/next-tick": "0.0.2",
     "yields/slug": "1.1.0",
     "visionmedia/batch": "0.5.0",
     "visionmedia/debug": "cfd9c65"
@@ -39,8 +40,7 @@
     "jkroso/equals": "*",
     "segmentio/analytics.js": "page",
     "segmentio/analytics.js-integration-tester": "*",
-    "segmentio/when": "*",
-    "timoxley/next-tick": "*"
+    "segmentio/when": "*"
   },
   "scripts": [
     "index.js",
