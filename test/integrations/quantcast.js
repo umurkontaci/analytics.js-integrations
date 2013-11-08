@@ -49,8 +49,16 @@ describe('Quantcast', function () {
       assert(window._qevents[0].uid === 'id');
     });
 
-    it('should push the page label', function () {
+    it('should not push the page label by default', function () {
       quantcast.initialize({ name: 'Page' });
+      var item = window._qevents[1];
+      assert(!window._qevents[0].labels);
+    });
+
+    it('should push the page label if the labelPages option is true', function () {
+      quantcast.options.labelPages = true;
+      quantcast.initialize({ name: 'Page' });
+      var item = window._qevents[1];
       assert(window._qevents[0].labels === 'Page');
     });
 
@@ -95,7 +103,14 @@ describe('Quantcast', function () {
       assert(item.uid === 'id');
     });
 
-    it('should push the page label', function () {
+    it('should not push the page label by default', function () {
+      quantcast.page('Page');
+      var item = window._qevents[1];
+      assert(!item.labels);
+    });
+
+    it('should push the page label if the labelPages option is true', function () {
+      quantcast.options.labelPages = true;
       quantcast.page('Page');
       var item = window._qevents[1];
       assert(item.labels === 'Page');
@@ -135,12 +150,6 @@ describe('Quantcast', function () {
       quantcast.track('event');
       var item = window._qevents[1];
       assert(item.uid === 'id');
-    });
-
-    it('should push the event label', function () {
-      quantcast.track('event');
-      var item = window._qevents[1];
-      assert(item.labels === 'event');
     });
   });
 

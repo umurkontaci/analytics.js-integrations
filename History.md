@@ -1,3 +1,8 @@
+0.0.3 - November 8, 2013
+------------------------
+* quantcast: change page labels to be behind an option
+* quantcast: remove event labels
+
 0.0.2 - November 7, 2013
 ------------------------
 * fix `next-tick` dependency
