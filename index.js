@@ -67,6 +67,7 @@ var integrations = [
  */
 
 each(integrations, function (slug) {
-  var Integration = require('./lib/' + slug).Integration;
-  exports[Integration.prototype.name] = Integration;
+  var plugin = require('./lib/' + slug);
+  var name = plugin.Integration.prototype.name;
+  exports[name] = plugin;
 });

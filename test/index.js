@@ -1,5 +1,5 @@
 
-describe('Integrations', function () {
+describe('integrations', function () {
 
   var assert = require('assert');
   var Integrations = require('integrations');
