@@ -19,7 +19,7 @@ kill:
 node_modules: package.json
 	@npm install
 
-server: node_modules kill
+server: build kill
 	@node test/server &
 
 test: build server
