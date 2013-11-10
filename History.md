@@ -1,3 +1,11 @@
+0.0.5 - November 10, 2013
+-------------------------
+* add fixes for wrapped loaders GA and UserVoice
+
+0.0.4 - November 8, 2013
+------------------------
+* exports: actually exporting the integrations
+
 0.0.3 - November 8, 2013
 ------------------------
 * quantcast: change page labels to be behind an option

@@ -2,7 +2,7 @@
   "name": "integrations",
   "repo": "segmentio/analytics.js-integrations",
   "description": "All of the third-party analytics.js integrations.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "keywords": ["analytics.js", "integrations", "analytics", "custom"],
   "dependencies": {
