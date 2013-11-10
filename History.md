@@ -1,3 +1,7 @@
+0.0.6 - November 10, 2013
+-------------------------
+* lytics: remove unused `initialPageview` option
+
 0.0.5 - November 10, 2013
 -------------------------
 * add fixes for wrapped loaders GA and UserVoice
