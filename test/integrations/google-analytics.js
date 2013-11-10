@@ -104,6 +104,11 @@ describe('Google Analytics', function () {
           done();
         });
       });
+
+      it('should call ready on load', function (done) {
+        ga.on('ready', done);
+        ga.load();
+      });
     });
 
     describe('#track', function () {
@@ -306,6 +311,11 @@ describe('Google Analytics', function () {
           assert(window._gaq.push !== Array.prototype.push);
           done();
         });
+      });
+
+      it('should call ready on load', function (done) {
+        ga.on('ready', done);
+        ga.load();
       });
     });
 

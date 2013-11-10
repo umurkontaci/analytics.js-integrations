@@ -77,13 +77,11 @@ describe('UserVoice', function () {
         trigger_position: 'bottom-right'
       };
 
-      it('should show the trigger', function (done) {
-        uservoice.initialize();
-        when(function () { return jQuery('.uv-icon').length; }, done);
+      beforeEach(function () {
+        uservoice.load = sinon.spy();
       });
 
       it('should call #load', function () {
-        uservoice.load = sinon.spy();
         uservoice.initialize();
         assert(uservoice.load.called);
       });
@@ -101,6 +99,31 @@ describe('UserVoice', function () {
       it('should push the addTrigger options', function () {
         uservoice.initialize();
         assert(equal(window.UserVoice[2], ['addTrigger', options]));
+      });
+
+      it('should be ready on initialize', function (done) {
+        uservoice.once('ready', done);
+        uservoice.initialize();
+      });
+    });
+
+    describe('#load', function () {
+      beforeEach(function () {
+        sinon.stub(uservoice, 'load');
+        uservoice.initialize();
+        uservoice.load.restore();
+      });
+
+      it('should replace window.UserVoice', function (done) {
+        uservoice.load(function () {
+          assert(window.UserVoice.push !== Array.prototype.push);
+          done();
+        });
+      });
+
+      it('should show the trigger', function (done) {
+        uservoice.load();
+        when(function () { return jQuery('.uv-icon').length; }, done);
       });
     });
 
@@ -247,12 +270,31 @@ describe('UserVoice', function () {
         assert(uservoice.group === undefined);
       });
 
-      it('should show the tab', function (done) {
+      it('should be ready on initialize', function (done) {
+        uservoice.once('ready', done);
         uservoice.initialize();
-        when(function () { return document.getElementById('uvTab'); }, done);
       });
     });
 
+    describe('#load', function () {
+      beforeEach(function () {
+        sinon.stub(uservoice, 'load');
+        uservoice.initialize();
+        uservoice.load.restore();
+      });
+
+      it('should replace window.UserVoice', function (done) {
+        uservoice.load(function () {
+          assert(window.UserVoice.push !== Array.prototype.push);
+          done();
+        });
+      });
+
+      it('should show the tab', function (done) {
+        uservoice.load();
+        when(function () { return document.getElementById('uvTab'); }, done);
+      });
+    });
 
     describe('#identify', function () {
       beforeEach(function () {
