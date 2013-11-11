@@ -75,6 +75,7 @@
     "lib/klaviyo.js",
     "lib/leadlander.js",
     "lib/livechat.js",
+    "lib/lucky-orange.js",
     "lib/lytics.js",
     "lib/mixpanel.js",
     "lib/mousestats.js",

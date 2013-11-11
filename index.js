@@ -37,6 +37,7 @@ var integrations = [
   'klaviyo',
   'leadlander',
   'livechat',
+  'lucky-orange',
   'lytics',
   'mixpanel',
   'mousestats',
