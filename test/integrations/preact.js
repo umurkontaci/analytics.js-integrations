@@ -33,9 +33,18 @@ describe('Preact', function () {
   });
 
   describe('#initialize', function () {
+    beforeEach(function () {
+      sinon.stub(preact, 'load');
+    });
+
     it('should push _setCode onto the window._lnq object', function () {
       preact.initialize();
       assert(equal(window._lnq[0], ['_setCode', settings.projectCode]));
+    });
+
+    it('should call #load', function () {
+      preact.initialize();
+      assert(preact.load.called);
     });
   });
 

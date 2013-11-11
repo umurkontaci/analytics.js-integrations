@@ -1,3 +1,7 @@
+0.1.2 - November 11, 2013
+-------------------------
+* preact: fixing load called from initialize
+
 0.1.1 - November 11, 2013
 -------------------------
 * rename `section` argument to `category`
