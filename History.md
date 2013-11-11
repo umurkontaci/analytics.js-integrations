@@ -1,3 +1,10 @@
+0.2.0 - November 11, 2013
+-------------------------
+* bugsnag: add bugsnag integration
+* lucky-orange: added lucky orange integration
+* drip: add drip integration
+* inspectlet: add tagging session on track
+
 0.1.1 - November 11, 2013
 -------------------------
 * rename `section` argument to `category`
