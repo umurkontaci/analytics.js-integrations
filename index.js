@@ -12,6 +12,7 @@ var integrations = [
   'awesm',
   'awesomatic',
   'bugherd',
+  'bugsnag',
   'chartbeat',
   'clicktale',
   'clicky',

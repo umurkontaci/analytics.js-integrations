@@ -50,6 +50,7 @@
     "lib/awesm.js",
     "lib/awesomatic.js",
     "lib/bugherd.js",
+    "lib/bugsnag.js",
     "lib/chartbeat.js",
     "lib/clicktale.js",
     "lib/clicky.js",
