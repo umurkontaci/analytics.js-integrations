@@ -33,7 +33,6 @@ describe('Lytics', function () {
       .option('cid', '')
       .option('cookie', 'seerid')
       .option('delay', 200)
-      .option('initialPageview', true)
       .option('sessionTimeout', 1800)
       .option('url', '//c.lytics.io');
   });

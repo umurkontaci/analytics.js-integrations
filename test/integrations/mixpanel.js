@@ -15,7 +15,6 @@ describe('Mixpanel', function () {
   beforeEach(function () {
     analytics.use(Mixpanel);
     mixpanel = new Mixpanel.Integration(settings);
-    mixpanel.initialize(); // noop
   });
 
   afterEach(function () {
@@ -25,7 +24,6 @@ describe('Mixpanel', function () {
   it('should have the right settings', function () {
     test(mixpanel)
       .name('Mixpanel')
-      .assumesPageview()
       .readyOnLoad()
       .global('mixpanel')
       .option('cookieName', '')

@@ -244,7 +244,7 @@ describe('Google Analytics', function () {
       ga.reset();
     });
 
-    describe('#initializeClassic', function () {
+    describe('#initialize', function () {
       beforeEach(function () {
         ga.load = sinon.spy();
       });
@@ -298,15 +298,15 @@ describe('Google Analytics', function () {
       });
     });
 
-    describe('#loadClassic', function () {
+    describe('#load', function () {
       beforeEach(function () {
-        sinon.stub(ga, 'loadClassic');
+        sinon.stub(ga, 'load');
         ga.initialize();
-        ga.loadClassic.restore();
+        ga.load.restore();
       });
 
       it('should replace window._gaq.push', function (done) {
-        ga.loadClassic(function (err) {
+        ga.load(function (err) {
           if (err) return done(err);
           assert(window._gaq.push !== Array.prototype.push);
           done();
@@ -319,67 +319,67 @@ describe('Google Analytics', function () {
       });
     });
 
-    describe('#trackClassic', function () {
+    describe('#track', function () {
       beforeEach(function () {
         ga.initialize();
         window._gaq.push = sinon.spy();
       });
 
       it('should send an event', function () {
-        ga.trackClassic('event');
+        ga.track('event');
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'event', undefined, 0, undefined]));
       });
 
       it('should send a category property', function () {
-        ga.trackClassic('event', { category: 'Category' });
+        ga.track('event', { category: 'Category' });
         assert(window._gaq.push.calledWith(['_trackEvent', 'Category', 'event', undefined, 0, undefined]));
       });
 
       it('should send a label property', function () {
-        ga.trackClassic('event', { label: 'label' });
+        ga.track('event', { label: 'label' });
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'event', 'label', 0, undefined]));
       });
 
       it('should send a rounded value property', function () {
-        ga.trackClassic('event', { value: 1.1 });
+        ga.track('event', { value: 1.1 });
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'event', undefined, 1, undefined]));
       });
 
       it('should prefer a rounded revenue property', function () {
-        ga.trackClassic('event', { revenue: 9.99 });
+        ga.track('event', { revenue: 9.99 });
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'event', undefined, 10, undefined]));
       });
 
       it('should send a non-interaction property', function () {
-        ga.trackClassic('event', { noninteraction: true });
+        ga.track('event', { noninteraction: true });
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'event', undefined, 0, true]));
       });
 
       it('should send a non-interaction option', function () {
-        ga.trackClassic('event', {}, { noninteraction: true });
+        ga.track('event', {}, { noninteraction: true });
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'event', undefined, 0, true]));
       });
     });
 
-    describe('#pageClassic', function () {
+    describe('#page', function () {
       beforeEach(function () {
         ga.initialize();
         window._gaq.push = sinon.spy();
       });
 
       it('should send a page view', function () {
-        ga.pageClassic();
+        ga.page();
         assert(window._gaq.push.calledWith(['_trackPageview', undefined]));
       });
 
       it('should send a path', function () {
-        ga.pageClassic(null, { path: '/path' });
+        ga.page(null, { path: '/path' });
         assert(window._gaq.push.calledWith(['_trackPageview', '/path']));
       });
 
       it('should send a named page event', function () {
         ga.options.trackNamedPages = true;
-        ga.pageClassic('Name');
+        ga.page('Name');
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'Viewed Name Page', undefined, 0, true]));
       });
     });
