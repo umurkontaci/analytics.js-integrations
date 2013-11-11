@@ -134,16 +134,16 @@ describe('Google Analytics', function () {
         }));
       });
 
-      it('should send a page properties', function () {
-        ga.page(null, 'name', { url: 'url', path: '/path' });
+      it('should send a page view with properties', function () {
+        ga.page('category', 'name', { url: 'url', path: '/path' });
         assert(window.ga.calledWith('send', 'pageview', {
           page: '/path',
-          title: 'name',
+          title: 'category name',m
           url: 'url'
         }));
       });
 
-      it('should send a named page event', function () {
+      it('should track a named page', function () {
         ga.page(null, 'Name');
         assert(window.ga.calledWith('send', 'event', {
           eventCategory: 'All',
@@ -154,28 +154,34 @@ describe('Google Analytics', function () {
         }));
       });
 
-      it('should not send a named page event when the option is off', function () {
-        ga.options.trackNamedPages = false;
-        ga.page(null, 'Name');
-        assert(!window.ga.calledTwice);
-      });
-
-      it('should send a section page event', function () {
-        ga.page('Section', 'Name');
+      it('should track a name + category page', function () {
+        ga.page('Category', 'Name');
         assert(window.ga.calledWith('send', 'event', {
-          eventCategory: 'Section',
-          eventAction: 'Viewed Section Name Page',
+          eventCategory: 'Category',
+          eventAction: 'Viewed Category Name Page',
           eventLabel: undefined,
           eventValue: 0,
           nonInteraction: true
         }));
       });
 
-      it('should not send a section page event when the option is off', function () {
+      it('should track a categorized page', function () {
+        ga.page('Category', 'Name');
+        assert(window.ga.calledWith('send', 'event', {
+          eventCategory: 'Category',
+          eventAction: 'Viewed Category Page',
+          eventLabel: undefined,
+          eventValue: 0,
+          nonInteraction: true
+        }));
+      });
+
+      it('should not track a named or categorized page when the option is off', function () {
         ga.options.trackNamedPages = false;
-        ga.options.trackSectionedPages = false;
-        ga.page('Section', 'Name');
-        assert(!window.ga.calledTwice);
+        ga.options.trackCategorizedPages = false;
+        ga.page(null, 'Name');
+        ga.page('Category', 'Name');
+        assert(window.ga.calledTwice);
       });
     });
 
@@ -207,11 +213,11 @@ describe('Google Analytics', function () {
         }));
       });
 
-      it('should send a stored section', function () {
-        ga.page('section');
+      it('should send a stored category', function () {
+        ga.page('category');
         ga.track('event', { category: 'category' });
         assert(window.ga.calledWith('send', 'event', {
-          eventCategory: 'section',
+          eventCategory: 'category',
           eventAction: 'event',
           eventLabel: undefined,
           eventValue: 0,
@@ -400,27 +406,27 @@ describe('Google Analytics', function () {
         assert(window._gaq.push.calledWith(['_trackPageview', '/path']));
       });
 
-      it('should send a named page event', function () {
+      it('should track a named page', function () {
         ga.page(null, 'Name');
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'Viewed Name Page', undefined, 0, true]));
       });
 
-      it('should not send a named page event when the option is off', function () {
+      it('should track a named page with a category', function () {
+        ga.page('Category', 'Name');
+        assert(window._gaq.push.calledWith(['_trackEvent', 'Category', 'Viewed Category Name Page', undefined, 0, true]));
+      });
+
+      it('should track a categorized page', function () {
+        ga.page('Category', 'Name');
+        assert(window._gaq.push.calledWith(['_trackEvent', 'Category', 'Viewed Category Page', undefined, 0, true]));
+      });
+
+      it('should not track a named or categorized page when the option is off', function () {
         ga.options.trackNamedPages = false;
+        ga.options.trackCategorizedPages = false;
         ga.page(null, 'Name');
-        assert(!window._gaq.push.calledTwice);
-      });
-
-      it('should send a section page event', function () {
-        ga.page('Section', 'Name');
-        assert(window._gaq.push.calledWith(['_trackEvent', 'Section', 'Viewed Section Name Page', undefined, 0, true]));
-      });
-
-      it('should not send a section page event when the option is off', function () {
-        ga.options.trackNamedPages = false;
-        ga.options.trackSectionedPages = false;
-        ga.page('Section', 'Name');
-        assert(!window._gaq.push.calledTwice);
+        ga.page('Category', 'Name');
+        assert(window._gaq.push.calledTwice);
       });
     });
 
@@ -440,10 +446,10 @@ describe('Google Analytics', function () {
         assert(window._gaq.push.calledWith(['_trackEvent', 'category', 'event', undefined, 0, undefined]));
       });
 
-      it('should send a stored section', function () {
-        ga.page('section');
+      it('should send a stored category', function () {
+        ga.page('category');
         ga.track('event', { category: 'category' });
-        assert(window._gaq.push.calledWith(['_trackEvent', 'section', 'event', undefined, 0, undefined]));
+        assert(window._gaq.push.calledWith(['_trackEvent', 'category', 'event', undefined, 0, undefined]));
       });
 
       it('should send a label property', function () {

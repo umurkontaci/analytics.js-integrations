@@ -95,19 +95,26 @@ describe('Amplitude', function () {
     });
 
     it('should track named pages by default', function () {
-      amplitude.page(null, 'Signup', {});
-      assert(window.amplitude.logEvent.calledWith('Viewed Signup Page', {}));
+      amplitude.page(null, 'Name', {});
+      assert(window.amplitude.logEvent.calledWith('Viewed Name Page', {}));
     });
 
-    it('should not track named pages if disabled', function () {
+    it('should track named pages with a category added', function () {
+      amplitude.page('Category', 'Name', {});
+      assert(window.amplitude.logEvent.calledWith('Viewed Category Name Page', {}));
+    });
+
+    it('should track categorized pages by default', function () {
+      amplitude.page('Category', 'Name', {});
+      assert(window.amplitude.logEvent.calledWith('Viewed Category Page', {}));
+    });
+
+    it('should not track name or categorized pages if disabled', function () {
       amplitude.options.trackNamedPages = false;
-      amplitude.page(null, 'Signup', {});
+      amplitude.options.trackCategorizedPages = false;
+      amplitude.page(null, 'Name', {});
+      amplitude.page('Category', 'Name', {});
       assert(!window.amplitude.logEvent.called);
-    });
-
-    it('should track section pages by default', function () {
-      amplitude.page('About', 'Team', {});
-      assert(window.amplitude.logEvent.calledWith('Viewed About Team Page', {}));
     });
   });
 

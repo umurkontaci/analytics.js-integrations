@@ -86,7 +86,7 @@ describe('FoxMetrics', function () {
     });
 
     it('should send page properties', function () {
-      foxmetrics.page('section', 'name', {
+      foxmetrics.page('category', 'name', {
         title: 'title',
         url: 'url',
         referrer: 'referrer'
@@ -95,7 +95,7 @@ describe('FoxMetrics', function () {
         '_fxm.pages.view',
         'title',
         'name',
-        'section',
+        'category',
         'url',
         'referrer'
       ]));
@@ -207,14 +207,14 @@ describe('FoxMetrics', function () {
       ]));
     });
 
-    it('should send a stored section', function () {
-      foxmetrics.page('section');
+    it('should send a stored category', function () {
+      foxmetrics.page('category');
       foxmetrics.track('event', { category: 'category' });
       assert(window._fxm.push.calledWith([
         '_fxm.pages.view',
         undefined,
         undefined,
-        'section',
+        'category',
         undefined,
         undefined
       ]));

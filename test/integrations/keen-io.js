@@ -112,21 +112,21 @@ describe('Keen IO', function () {
       assert(window.Keen.addEvent.calledWith('Viewed Name Page'));
     });
 
-    it('should not track named pages when the option is off', function () {
+    it('should track named pages with categories', function () {
+      keen.page('Category', 'Name');
+      assert(window.Keen.addEvent.calledWith('Viewed Category Name Page'));
+    });
+
+    it('should track categorized pages by default', function () {
+      keen.page('Category', 'Name');
+      assert(window.Keen.addEvent.calledWith('Viewed Category Page'));
+    });
+
+    it('should not track a named or categorized page when the option is off', function () {
       keen.options.trackNamedPages = false;
+      keen.options.trackCategorizedPages = false;
       keen.page(null, 'Name');
-      assert(!window.Keen.addEvent.called);
-    });
-
-    it('should track sectioned pages by default', function () {
-      keen.page('Section', 'Name');
-      assert(window.Keen.addEvent.calledWith('Viewed Section Name Page'));
-    });
-
-    it('should not track sectioned pages when the option is off', function () {
-      keen.options.trackNamedPages = false;
-      keen.options.trackSectionedPages = false;
-      keen.page('Section', 'Name');
+      keen.page('Category', 'Name');
       assert(!window.Keen.addEvent.called);
     });
   });

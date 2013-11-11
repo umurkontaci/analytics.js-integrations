@@ -1,3 +1,8 @@
+0.1.1 - November 11, 2013
+-------------------------
+* rename `section` argument to `category`
+* change categorized page track logic
+
 0.1.0 - November 10, 2013
 -------------------------
 * add `loaded` method to all integrations

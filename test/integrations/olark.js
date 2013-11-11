@@ -95,11 +95,11 @@ describe('Olark', function () {
       });
     });
 
-    it('should send a page section and name', function (done) {
+    it('should send a page category and name', function (done) {
       expandThen(function () {
-        olark.page('Section', 'Name');
+        olark.page('Category', 'Name');
         assert(window.olark.calledWith('api.chat.sendNotificationToOperator', {
-          body: 'looking at section name page'
+          body: 'looking at category name page'
         }));
         done();
       });

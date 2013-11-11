@@ -87,34 +87,28 @@ describe('Tapstream', function () {
       assert(window._tsq.push.calledWith(['fireHit', 'loaded-a-page', [undefined]]));
     });
 
-    it('should not track all pages if the option is off', function () {
-      tapstream.options.trackAllPages = false;
-      tapstream.page();
-      assert(!window._tsq.push.called);
-    });
-
     it('should track named pages by default', function () {
       tapstream.page(null, 'Name');
       assert(window._tsq.push.calledWith(['fireHit', 'viewed-name-page', [undefined]]));
     });
 
-    it('should not track named pages if the option is off', function () {
-      tapstream.options.trackAllPages = false;
-      tapstream.options.trackNamedPages = false;
-      tapstream.page(null, 'Name');
-      assert(!window._tsq.push.called);
+
+    it('should track named pages with a category', function () {
+      tapstream.page('Category', 'Name');
+      assert(window._tsq.push.calledWith(['fireHit', 'viewed-category-name-page', [undefined]]));
     });
 
-    it('should track sectioned pages by default', function () {
-      tapstream.page(null, 'Name');
-      assert(window._tsq.push.calledWith(['fireHit', 'viewed-name-page', [undefined]]));
+    it('should track categorized pages by default', function () {
+      tapstream.page('Category', 'Name');
+      assert(window._tsq.push.calledWith(['fireHit', 'viewed-category-page', [undefined]]));
     });
 
-    it('should not track setioned pages if the option is off', function () {
+    it('should not track any pages if the options are off', function () {
       tapstream.options.trackAllPages = false;
       tapstream.options.trackNamedPages = false;
-      tapstream.options.trackSectionedPages = false;
-      tapstream.page('Section', 'Name');
+      tapstream.options.trackCategorizedPages = false;
+      tapstream.page(null, 'Name');
+      tapstream.page('Category', 'Name');
       assert(!window._tsq.push.called);
     });
   });

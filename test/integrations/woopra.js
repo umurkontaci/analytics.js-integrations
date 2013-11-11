@@ -74,6 +74,33 @@ describe('Woopra', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      woopra.initialize();
+      window.woopra.track = sinon.spy();
+    });
+
+    it('should send a page view', function () {
+      woopra.page();
+      assert(window.woopra.track.calledWith('pv', {}));
+    });
+
+    it('should send a title', function () {
+      woopra.page(null, null, { title: 'title' });
+      assert(window.woopra.track.calledWith('pv', { title: 'title' }));
+    });
+
+    it('should prefer a name', function () {
+      woopra.page(null, 'name', { title: 'title' });
+      assert(window.woopra.track.calledWith('pv', { title: 'name' }));
+    });
+
+    it('should prefer a category and name', function () {
+      woopra.page('category', 'name', { title: 'title' });
+      assert(window.woopra.track.calledWith('pv', { title: 'category name' }));
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function () {
       woopra.initialize();
@@ -111,33 +138,6 @@ describe('Woopra', function () {
     it('should send properties', function () {
       woopra.track('event', { property: 'Property' });
       assert(window.woopra.track.calledWith('event', { property: 'Property' }));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function () {
-      woopra.initialize();
-      window.woopra.track = sinon.spy();
-    });
-
-    it('should send a page view', function () {
-      woopra.page();
-      assert(window.woopra.track.calledWith('pv', {}));
-    });
-
-    it('should send a title', function () {
-      woopra.page(null, null, { title: 'title' });
-      assert(window.woopra.track.calledWith('pv', { title: 'title' }));
-    });
-
-    it('should prefer a name', function () {
-      woopra.page(null, 'name', { title: 'title' });
-      assert(window.woopra.track.calledWith('pv', { title: 'name' }));
-    });
-
-    it('should prefer a section and name', function () {
-      woopra.page('section', 'name', { title: 'title' });
-      assert(window.woopra.track.calledWith('pv', { title: 'section name' }));
     });
   });
 });

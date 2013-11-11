@@ -98,9 +98,9 @@ describe('Chartbeat', function () {
       assert(window.pSUPERFLY.virtualPage.calledWith('/path', 'name'));
     });
 
-    it('should prefer a name and section', function () {
-      chartbeat.page('section', 'name', { path: '/path', title: 'title' });
-      assert(window.pSUPERFLY.virtualPage.calledWith('/path', 'section name'));
+    it('should prefer a name and category', function () {
+      chartbeat.page('category', 'name', { path: '/path', title: 'title' });
+      assert(window.pSUPERFLY.virtualPage.calledWith('/path', 'category name'));
     });
   });
 

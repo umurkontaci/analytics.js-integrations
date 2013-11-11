@@ -92,6 +92,31 @@ describe('GoSquared', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function (done) {
+      gosquared.initialize();
+      gosquared.once('load', function () {
+        window.GoSquared.q.push = sinon.spy();
+        done();
+      });
+    });
+
+    it('should send a path and title', function () {
+      gosquared.page(null, null, { path: '/path', title: 'title' });
+      assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'title']));
+    });
+
+    it('should prefer a name', function () {
+      gosquared.page(null, 'name', { path: '/path', title: 'title' });
+      assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'name']));
+    });
+
+    it('should prefer a name and category', function () {
+      gosquared.page('category', 'name', { path: '/path', title: 'title' });
+      assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'category name']));
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function (done) {
       gosquared.initialize();
@@ -147,31 +172,6 @@ describe('GoSquared', function () {
     it('should send an event and properties', function () {
       gosquared.track('event', { property: true });
       assert(window.GoSquared.q.push.calledWith(['TrackEvent', 'event', { property: true }]));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function (done) {
-      gosquared.initialize();
-      gosquared.once('load', function () {
-        window.GoSquared.q.push = sinon.spy();
-        done();
-      });
-    });
-
-    it('should send a path and title', function () {
-      gosquared.page(null, null, { path: '/path', title: 'title' });
-      assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'title']));
-    });
-
-    it('should prefer a name', function () {
-      gosquared.page(null, 'name', { path: '/path', title: 'title' });
-      assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'name']));
-    });
-
-    it('should prefer a name and section', function () {
-      gosquared.page('section', 'name', { path: '/path', title: 'title' });
-      assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'section name']));
     });
   });
 

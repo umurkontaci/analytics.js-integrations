@@ -102,9 +102,9 @@ describe('Clicky', function () {
       assert(window.clicky.log.calledWith('/path', 'name'));
     });
 
-    it('should prefer a name and section', function () {
-      clicky.page('section', 'name', { path: '/path', title: 'title' });
-      assert(window.clicky.log.calledWith('/path', 'section name'));
+    it('should prefer a name and category', function () {
+      clicky.page('category', 'name', { path: '/path', title: 'title' });
+      assert(window.clicky.log.calledWith('/path', 'category name'));
     });
   });
 

@@ -100,21 +100,21 @@ describe('Mixpanel', function () {
       assert(window.mixpanel.track.calledWith('Viewed Name Page'));
     });
 
-    it('should not track named pages when the option is off', function () {
+    it('should track named pages with categories', function () {
+      mixpanel.page('Category', 'Name');
+      assert(window.mixpanel.track.calledWith('Viewed Category Name Page'));
+    });
+
+    it('should track categorized pages by default', function () {
+      mixpanel.page('Category', 'Name');
+      assert(window.mixpanel.track.calledWith('Viewed Category Page'));
+    });
+
+    it('should not track category pages when the option is off', function () {
       mixpanel.options.trackNamedPages = false;
+      mixpanel.options.trackCategorizedPages = false;
       mixpanel.page(null, 'Name');
-      assert(!window.mixpanel.track.called);
-    });
-
-    it('should track section pages by default', function () {
-      mixpanel.page('Section', 'Name');
-      assert(window.mixpanel.track.calledWith('Viewed Section Name Page'));
-    });
-
-    it('should not track section pages when the option is off', function () {
-      mixpanel.options.trackNamedPages = false;
-      mixpanel.options.trackSectionedPages = false;
-      mixpanel.page('Section', 'Name');
+      mixpanel.page('Category', 'Name');
       assert(!window.mixpanel.track.called);
     });
   });

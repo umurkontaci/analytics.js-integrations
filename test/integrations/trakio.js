@@ -107,9 +107,9 @@ describe('trak.io', function () {
       assert(window.trak.io.page_view.calledWith(undefined, 'name'));
     });
 
-    it('should prefer a section and name', function () {
-      trakio.page('section', 'name', { title: 'title' });
-      assert(window.trak.io.page_view.calledWith(undefined, 'section name'));
+    it('should prefer a category and name', function () {
+      trakio.page('category', 'name', { title: 'title' });
+      assert(window.trak.io.page_view.calledWith(undefined, 'category name'));
     });
 
     it('should track named pages by default', function () {
@@ -117,21 +117,21 @@ describe('trak.io', function () {
       assert(window.trak.io.track.calledWith('Viewed Name Page'));
     });
 
-    it('should not track named pages if the option is off', function () {
+    it('should track named pages with categories', function () {
+      trakio.page('Category', 'Name');
+      assert(window.trak.io.track.calledWith('Viewed Category Name Page'));
+    });
+
+    it('should track categorized pages by default', function () {
+      trakio.page('Category', 'Name');
+      assert(window.trak.io.track.calledWith('Viewed Category Page'));
+    });
+
+    it('should not track named or categorized pages if the option is off', function () {
       trakio.options.trackNamedPages = false;
+      trakio.options.trackCategorizedPages = false;
       trakio.page(null, 'Name');
-      assert(!window.trak.io.track.called);
-    });
-
-    it('should track sectioned pages by default', function () {
-      trakio.page('Section', 'Name');
-      assert(window.trak.io.track.calledWith('Viewed Section Name Page'));
-    });
-
-    it('should not track sectioned pages if the option is off', function () {
-      trakio.options.trackNamedPages = false;
-      trakio.options.trackSectionedPages = false;
-      trakio.page('Section', 'Name');
+      trakio.page('Category', 'Name');
       assert(!window.trak.io.track.called);
     });
   });
