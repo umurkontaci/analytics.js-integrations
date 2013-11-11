@@ -1,6 +1,7 @@
 0.1.0 - November 10, 2013
 -------------------------
 * add `loaded` method to all integrations
+* change integrations to use the new `page` method signature with `section`
 
 0.0.6 - November 10, 2013
 -------------------------
