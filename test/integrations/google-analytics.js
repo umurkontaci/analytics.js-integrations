@@ -138,7 +138,7 @@ describe('Google Analytics', function () {
         ga.page('category', 'name', { url: 'url', path: '/path' });
         assert(window.ga.calledWith('send', 'pageview', {
           page: '/path',
-          title: 'category name',m
+          title: 'category name',
           url: 'url'
         }));
       });
