@@ -85,4 +85,16 @@ describe('Inspectlet', function () {
     });
   });
 
+  describe('#track', function () {
+    beforeEach(function () {
+      window.__insp = [];
+      sinon.stub(window.__insp, 'push');
+    });
+
+    it('should tag the session', function () {
+      inspectlet.track('event');
+      assert(window.__insp.push.calledWith(['tagSession', 'event']));
+    });
+  });
+
 });
