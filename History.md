@@ -1,6 +1,9 @@
 0.0.6 - November 10, 2013
 -------------------------
 * lytics: remove unused `initialPageview` option
+* google analytics: fix classic tests to use non-classic method names
+* mixpanel: remove `assumesPageview` setting
+* clean all integration files
 
 0.0.5 - November 10, 2013
 -------------------------
