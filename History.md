@@ -1,3 +1,7 @@
+0.1.0 - November 10, 2013
+-------------------------
+* add `loaded` method to all integrations
+
 0.0.6 - November 10, 2013
 -------------------------
 * lytics: remove unused `initialPageview` option

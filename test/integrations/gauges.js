@@ -49,6 +49,15 @@ describe('Gauges', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._gauges.push', function () {
+      window._gauges = [];
+      assert(!gauges.loaded());
+      window._gauges.push = function(){};
+      assert(gauges.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(gauges, 'load');
@@ -56,10 +65,11 @@ describe('Gauges', function () {
       gauges.load.restore();
     });
 
-    it('should replace the gauges queue', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!gauges.loaded());
       gauges.load(function (err) {
         if (err) return done(err);
-        assert(window._gauges.push !== Array.prototype.push);
+        assert(gauges.loaded());
         done();
       });
     });

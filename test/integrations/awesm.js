@@ -52,6 +52,15 @@ describe('awe.sm', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.AWESM._exists', function () {
+      window.AWESM = {};
+      assert(!awesm.loaded());
+      window.AWESM._exists = true;
+      assert(awesm.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(awesm, 'load');
@@ -59,10 +68,11 @@ describe('awe.sm', function () {
       awesm.load.restore();
     });
 
-    it('should set window.AWESM._exists', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!awesm.loaded());
       awesm.load(function (err) {
         if (err) return done(err);
-        assert(window.AWESM._exists);
+        assert(awesm.loaded());
         done();
       });
     });

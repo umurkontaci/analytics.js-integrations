@@ -49,12 +49,36 @@ describe('LiveChat', function () {
     });
   });
 
+  describe('#loaded', function () {
+    var global;
+
+    before(function () {
+      global = window.LC_API;
+    });
+
+    after(function () {
+      window.LC_API = global;
+    });
+
+    it('should test window.LC_API', function () {
+      assert(!livechat.loaded());
+      window.LC_API = {};
+      assert(livechat.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.LC_API', function (done) {
-      assert(!window.LC_API);
+    beforeEach(function () {
+      sinon.stub(livechat, 'load');
+      livechat.initialize();
+      livechat.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!livechat.loaded());
       livechat.load(function (err) {
         if (err) return done(err);
-        assert(window.LC_API);
+        assert(livechat.loaded());
         done();
       });
     });

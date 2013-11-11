@@ -40,11 +40,27 @@ describe('FoxMetrics', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._fxm.appId', function () {
+      window._fxm = [];
+      assert(!foxmetrics.loaded());
+      window._fxm.appId = settings.appId;
+      assert(foxmetrics.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window._fxm.appId', function (done) {
+    beforeEach(function () {
+      sinon.stub(foxmetrics, 'load');
+      foxmetrics.initialize();
+      foxmetrics.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!foxmetrics.loaded());
       foxmetrics.load(function (err) {
         if (err) return done(err);
-        assert(window._fxm.appId);
+        assert(foxmetrics.loaded());
         done();
       });
     });

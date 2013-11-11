@@ -57,12 +57,27 @@ describe('Heap', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.heap.appid', function () {
+      window.heap = {};
+      assert(!heap.loaded());
+      window.heap.appid = settings.apiKey;
+      assert(heap.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should replace window.heap', function (done) {
-      var global = window.heap = {};
+    beforeEach(function () {
+      sinon.stub(heap, 'load');
+      heap.initialize();
+      heap.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!heap.loaded());
       heap.load(function (err) {
         if (err) return done(err);
-        assert(window.heap !== global);
+        assert(heap.loaded());
         done();
       });
     });

@@ -31,6 +31,32 @@ describe('Woopra', function () {
       .option('domain', '');
   });
 
+  describe('#loaded', function () {
+    it('should test window.woopra.loaded', function () {
+      window.woopra = {};
+      assert(!woopra.loaded());
+      window.woopra.loaded = true;
+      assert(woopra.loaded());
+    });
+  });
+
+  describe('#load', function () {
+    beforeEach(function () {
+      sinon.stub(woopra, 'load');
+      woopra.initialize();
+      woopra.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!woopra.loaded());
+      woopra.load(function (err) {
+        if (err) return done(err);
+        assert(woopra.loaded());
+        done();
+      });
+    });
+  });
+
   describe('#initialize', function () {
     beforeEach(function () {
       woopra.load = sinon.spy();

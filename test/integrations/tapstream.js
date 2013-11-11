@@ -50,6 +50,15 @@ describe('Tapstream', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._tsq.push', function () {
+      window._tsq = [];
+      assert(!tapstream.loaded());
+      window._tsq.push = function(){};
+      assert(tapstream.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(tapstream, 'load');
@@ -57,10 +66,11 @@ describe('Tapstream', function () {
       tapstream.load.restore();
     });
 
-    it('should replace the window._tsq object', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!tapstream.loaded());
       tapstream.load(function (err) {
         if (err) return done(err);
-        assert(window._tsq.push !== Array.prototype.push);
+        assert(tapstream.loaded());
         done();
       });
     });

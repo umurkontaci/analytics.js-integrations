@@ -8,23 +8,23 @@ describe('Get Satisfaction', function () {
   var sinon = require('sinon');
   var test = require('integration-tester');
 
-  var getsatisfaction;
+  var gs;
   var settings = {
     widgetId: 5005
   };
 
   beforeEach(function () {
     analytics.use(GetSatisfaction);
-    getsatisfaction = new GetSatisfaction.Integration(settings);
-    getsatisfaction.initialize(); // noop
+    gs = new GetSatisfaction.Integration(settings);
+    gs.initialize(); // noop
   });
 
   afterEach(function () {
-    getsatisfaction.reset();
+    gs.reset();
   });
 
   it('should have the right settings', function () {
-    test(getsatisfaction)
+    test(gs)
       .name('Get Satisfaction')
       .assumesPageview()
       .readyOnLoad()
@@ -34,26 +34,40 @@ describe('Get Satisfaction', function () {
 
   describe('#initialize', function () {
     beforeEach(function () {
-      getsatisfaction.load = sinon.spy();
+      gs.load = sinon.spy();
     });
 
     it('should add the get satisfaction widget to the dom', function () {
-      getsatisfaction.initialize();
+      gs.initialize();
       assert(document.getElementById('getsat-widget-' + settings.widgetId));
     });
 
     it('should call #load', function () {
-      getsatisfaction.initialize();
-      assert(getsatisfaction.load.called);
+      gs.initialize();
+      assert(gs.load.called);
+    });
+  });
+
+  describe('#loaded', function () {
+    it('should test window.GSFN', function () {
+      assert(!gs.loaded());
+      window.GSFN = {};
+      assert(gs.loaded());
     });
   });
 
   describe('#load', function () {
-    it('should create window.GSFN', function (done) {
-      assert(!window.GSFN);
-      getsatisfaction.load(function (err) {
+    beforeEach(function () {
+      sinon.stub(gs, 'load');
+      gs.initialize();
+      gs.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!gs.loaded());
+      gs.load(function (err) {
         if (err) return done(err);
-        assert(window.GSFN);
+        assert(gs.loaded());
         done();
       });
     });

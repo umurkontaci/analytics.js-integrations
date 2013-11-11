@@ -46,6 +46,25 @@ describe('KISSmetrics', function () {
     assert(window.KM);
   });
 
+  describe('#loaded', function () {
+    var global;
+
+    before(function () {
+      global = window.KM;
+    });
+
+    after(function () {
+      window.KM = global;
+    });
+
+    it('should test window.KM', function () {
+      window.KM = undefined;
+      assert(!kissmetrics.loaded());
+      window.KM = {};
+      assert(kissmetrics.loaded());
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function () {
       window._kmq.push = sinon.spy();

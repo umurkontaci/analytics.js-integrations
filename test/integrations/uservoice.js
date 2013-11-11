@@ -107,6 +107,15 @@ describe('UserVoice', function () {
       });
     });
 
+    describe('#loaded', function () {
+      it('should test window.UserVoice.push', function () {
+        window.UserVoice = [];
+        assert(!uservoice.loaded());
+        window.UserVoice.push = function(){};
+        assert(uservoice.loaded());
+      });
+    });
+
     describe('#load', function () {
       beforeEach(function () {
         sinon.stub(uservoice, 'load');
@@ -114,9 +123,11 @@ describe('UserVoice', function () {
         uservoice.load.restore();
       });
 
-      it('should replace window.UserVoice', function (done) {
-        uservoice.load(function () {
-          assert(window.UserVoice.push !== Array.prototype.push);
+      it('should change loaded state', function (done) {
+        assert(!uservoice.loaded());
+        uservoice.load(function (err) {
+          if (err) return done(err);
+          assert(uservoice.loaded());
           done();
         });
       });
@@ -276,6 +287,15 @@ describe('UserVoice', function () {
       });
     });
 
+    describe('#loaded', function () {
+      it('should test window.UserVoice.push', function () {
+        window.UserVoice = [];
+        assert(!uservoice.loaded());
+        window.UserVoice.push = function(){};
+        assert(uservoice.loaded());
+      });
+    });
+
     describe('#load', function () {
       beforeEach(function () {
         sinon.stub(uservoice, 'load');
@@ -283,9 +303,11 @@ describe('UserVoice', function () {
         uservoice.load.restore();
       });
 
-      it('should replace window.UserVoice', function (done) {
-        uservoice.load(function () {
-          assert(window.UserVoice.push !== Array.prototype.push);
+      it('should change loaded state', function (done) {
+        assert(!uservoice.loaded());
+        uservoice.load(function (err) {
+          if (err) return done(err);
+          assert(uservoice.loaded());
           done();
         });
       });

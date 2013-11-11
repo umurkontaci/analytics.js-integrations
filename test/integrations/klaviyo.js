@@ -55,6 +55,15 @@ describe('Klaviyo', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._learnq.push', function () {
+      window._learnq = [];
+      assert(!klaviyo.loaded());
+      window._learnq.push = function(){};
+      assert(klaviyo.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(klaviyo, 'load');
@@ -62,10 +71,12 @@ describe('Klaviyo', function () {
       klaviyo.load.restore();
     });
 
-    it('should replace window._learnq.push', function (done) {
-      klaviyo.load(function () {
+    it('should change loaded state', function (done) {
+      assert(!klaviyo.loaded());
+      klaviyo.load(function (err) {
+        if (err) return done(err);
         tick(function () {
-          assert(window._learnq.push !== Array.prototype.push);
+          assert(klaviyo.loaded());
           done();
         });
       });

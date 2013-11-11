@@ -54,11 +54,27 @@ describe('Lytics', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.jstag.bind', function () {
+      window.jstag = {};
+      assert(!lytics.loaded());
+      window.jstag.bind = function(){};
+      assert(lytics.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.jstag.bind', function (done) {
+    beforeEach(function () {
+      sinon.stub(lytics, 'load');
+      lytics.initialize();
+      lytics.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!lytics.loaded());
       lytics.load(function (err) {
         if (err) return done(err);
-        assert(window.jstag.bind);
+        assert(lytics.loaded());
         done();
       });
     });

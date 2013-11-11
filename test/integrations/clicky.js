@@ -15,7 +15,6 @@ describe('Clicky', function () {
 
   beforeEach(function () {
     analytics.use(Clicky);
-    analytics.use(Clicky);
     clicky = new Clicky.Integration(settings);
     clicky.initialize(); // noop
   });
@@ -62,12 +61,26 @@ describe('Clicky', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.clicky', function () {
+      assert(!clicky.loaded());
+      window.clicky = {};
+      assert(clicky.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.clicky', function (done) {
-      assert(!window.clicky);
+    beforeEach(function () {
+      sinon.stub(clicky, 'load');
+      clicky.initialize();
+      clicky.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!clicky.loaded());
       clicky.load(function (err) {
         if (err) return done(err);
-        assert(window.clicky);
+        assert(clicky.loaded());
         done();
       });
     });

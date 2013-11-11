@@ -61,12 +61,27 @@ describe('Keen IO', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.Keen.Base64', function () {
+      window.Keen = {};
+      assert(!keen.loaded());
+      window.Keen.Base64 = true;
+      assert(keen.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.Keen.Base64', function (done) {
-      assert(!window.Keen);
+    beforeEach(function () {
+      sinon.stub(keen, 'load');
+      keen.initialize();
+      keen.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!keen.loaded());
       keen.load(function (err) {
         if (err) return done(err);
-        assert(window.Keen);
+        assert(keen.loaded());
         done();
       });
     });

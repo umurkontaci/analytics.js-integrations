@@ -67,6 +67,15 @@ describe('Errorception', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._errs.push', function () {
+      window._errs = [];
+      assert(!errorception.loaded());
+      window._errs.push = function(){};
+      assert(errorception.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(errorception, 'load');
@@ -77,10 +86,11 @@ describe('Errorception', function () {
       errorception.load.restore();
     });
 
-    it('should create window._errs', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!errorception.loaded());
       errorception.load(function (err) {
         if (err) return done(err);
-        assert(window._errs.push !== Array.prototype.push);
+        assert(errorception.loaded());
         done();
       });
     });

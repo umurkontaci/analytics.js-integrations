@@ -37,6 +37,14 @@ describe('Sentry', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.Raven', function () {
+      assert(!sentry.loaded());
+      window.Raven = {};
+      assert(sentry.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(sentry, 'load');
@@ -44,9 +52,11 @@ describe('Sentry', function () {
       sentry.load.restore();
     });
 
-    it('should create window.Raven', function (done) {
-      sentry.load(function () {
-        assert(window.Raven);
+    it('should change loaded state', function (done) {
+      assert(!sentry.loaded());
+      sentry.load(function (err) {
+        if (err) return done(err);
+        assert(sentry.loaded());
         done();
       });
     });

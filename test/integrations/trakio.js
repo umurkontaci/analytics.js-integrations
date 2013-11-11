@@ -54,6 +54,15 @@ describe('trak.io', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.trak.loaded', function () {
+      window.trak = {};
+      assert(!trakio.loaded());
+      window.trak.loaded = true;
+      assert(trakio.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(trakio, 'load');
@@ -61,11 +70,14 @@ describe('trak.io', function () {
       trakio.load.restore();
     });
 
-    it('should load the trak object', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!trakio.loaded());
       trakio.load(function (err) {
         if (err) return done(err);
         // doesn't load immediately
-        when(function () { return window.trak && window.trak.loaded; }, done);
+        when(function () {
+          return trakio.loaded();
+        }, done);
       });
     });
   });

@@ -67,6 +67,15 @@ describe('Evergage', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._aaq.push', function () {
+      window._aaq = [];
+      assert(!evergage.loaded());
+      window._aaq.push = function(){};
+      assert(evergage.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(evergage, 'load');
@@ -74,10 +83,11 @@ describe('Evergage', function () {
       evergage.load.restore();
     });
 
-    it('should replace window._aaq.push', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!evergage.loaded());
       evergage.load(function (err) {
         if (err) return done(err);
-        assert(window._aaq.push !== Array.prototype.push);
+        assert(evergage.loaded());
         done();
       });
     });

@@ -51,6 +51,15 @@ describe('Yandex Metrica', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.Ya.Metrika', function () {
+      window.Ya = {};
+      assert(!yandex.loaded());
+      window.Ya.Metrika = {};
+      assert(yandex.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(yandex, 'load');
@@ -58,10 +67,11 @@ describe('Yandex Metrica', function () {
       yandex.load.restore();
     });
 
-    it('should create the window.Ya.Metrika variable', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!yandex.loaded());
       yandex.load(function (err) {
         if (err) return done(err);
-        assert(window.Ya.Metrika);
+        assert(yandex.loaded());
         done();
       });
     });

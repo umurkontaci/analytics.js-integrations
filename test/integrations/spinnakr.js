@@ -54,13 +54,29 @@ describe('Spinnakr', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._spinnakr', function () {
+      assert(!spinnakr.loaded());
+      window._spinnakr = {};
+      assert(spinnakr.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should set window._spinnakr', function (done) {
-      assert(!window._spinnakr);
+    beforeEach(function () {
+      sinon.stub(spinnakr, 'load');
+      spinnakr.initialize();
+      spinnakr.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!spinnakr.loaded());
       spinnakr.load(function (err) {
         if (err) return done(err);
         // it makes its own ajax request before it creates the global
-        when(function () { return window._spinnakr; }, done);
+        when(function () {
+          return spinnakr.loaded();
+        }, done);
       });
     });
   });

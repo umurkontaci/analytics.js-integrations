@@ -39,6 +39,15 @@ describe('Preact', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._lnq.push', function () {
+      window._lnq = [];
+      assert(!preact.loaded());
+      window._lnq.push = function(){};
+      assert(preact.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(preact, 'load');
@@ -46,9 +55,11 @@ describe('Preact', function () {
       preact.load.restore();
     });
 
-    it('should create the window._lnq object', function (done) {
-      preact.load(function () {
-        assert(window._lnq);
+    it('should change loaded state', function (done) {
+      assert(!preact.loaded());
+      preact.load(function (err) {
+        if (err) return done(err);
+        assert(preact.loaded());
         done();
       });
     });

@@ -42,12 +42,26 @@ describe('Intercom', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.Intercom', function () {
+      assert(!intercom.loaded());
+      window.Intercom = {};
+      assert(intercom.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.Intercom', function (done) {
-      assert(!window.Intercom);
+    beforeEach(function () {
+      sinon.stub(intercom, 'load');
+      intercom.initialize();
+      intercom.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!intercom.loaded());
       intercom.load(function (err) {
         if (err) return done(err);
-        assert(window.Intercom);
+        assert(intercom.loaded());
         done();
       });
     });

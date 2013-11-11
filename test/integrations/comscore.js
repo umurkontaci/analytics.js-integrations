@@ -49,12 +49,26 @@ describe('comScore', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.COMSCORE', function () {
+      assert(!comscore.loaded());
+      window.COMSCORE = {};
+      assert(comscore.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.COMSCORE', function (done) {
-      assert(!window.COMSCORE);
+    beforeEach(function () {
+      sinon.stub(comscore, 'load');
+      comscore.initialize();
+      comscore.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!comscore.loaded());
       comscore.load(function (err) {
         if (err) return done(err);
-        assert(window.COMSCORE);
+        assert(comscore.loaded());
         done();
       });
     });

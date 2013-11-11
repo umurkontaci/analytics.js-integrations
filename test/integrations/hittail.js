@@ -15,16 +15,16 @@ describe('HitTail', function () {
 
   beforeEach(function () {
     analytics.use(HitTail);
-    hittal = new HitTail.Integration(settings);
-    hittal.initialize(); // noop
+    hittail = new HitTail.Integration(settings);
+    hittail.initialize(); // noop
   });
 
   afterEach(function () {
-    hittal.reset();
+    hittail.reset();
   });
 
   it('should have the right settings', function () {
-    test(hittal)
+    test(hittail)
       .name('HitTail')
       .assumesPageview()
       .readyOnLoad()
@@ -34,18 +34,32 @@ describe('HitTail', function () {
 
   describe('#initialize', function () {
     it('should call #load', function () {
-      hittal.load = sinon.spy();
-      hittal.initialize();
-      assert(hittal.load.called);
+      hittail.load = sinon.spy();
+      hittail.initialize();
+      assert(hittail.load.called);
+    });
+  });
+
+  describe('#loaded', function () {
+    it('should test window.htk', function () {
+      assert(!hittail.loaded());
+      window.htk = {};
+      assert(hittail.loaded());
     });
   });
 
   describe('#load', function () {
-    it('should create window.htk', function (done) {
-      assert(!window.htk);
-      hittal.load(function (err) {
+    beforeEach(function () {
+      sinon.stub(hittail, 'load');
+      hittail.initialize();
+      hittail.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!hittail.loaded());
+      hittail.load(function (err) {
         if (err) return done(err);
-        assert(window.htk);
+        assert(hittail.loaded());
         done();
       });
     });

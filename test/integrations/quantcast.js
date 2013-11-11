@@ -68,12 +68,26 @@ describe('Quantcast', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.__qc', function () {
+      assert(!quantcast.loaded());
+      window.__qc = {};
+      assert(quantcast.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.__qc', function (done) {
-      assert(!window.__qc);
+    beforeEach(function () {
+      sinon.stub(quantcast, 'load');
+      quantcast.initialize();
+      quantcast.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!quantcast.loaded());
       quantcast.load(function (err) {
         if (err) return done(err);
-        assert(window.__qc);
+        assert(quantcast.loaded());
         done();
       });
     });

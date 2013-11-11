@@ -63,6 +63,15 @@ describe('Rollbar', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._rollbar.push', function () {
+      window._rollbar = [];
+      assert(!rollbar.loaded());
+      window._rollbar.push = function(){};
+      assert(rollbar.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(rollbar, 'load');
@@ -73,10 +82,11 @@ describe('Rollbar', function () {
       rollbar.load.restore();
     });
 
-    it('should set window._rollbar', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!rollbar.loaded());
       rollbar.load(function (err) {
         if (err) return done(err);
-        assert(window._rollbar.push !== Array.prototype.push);
+        assert(rollbar.loaded());
         done();
       });
     });

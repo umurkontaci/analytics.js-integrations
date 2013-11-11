@@ -40,12 +40,26 @@ describe('Crazy Egg', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.CE2', function () {
+      assert(!crazyegg.loaded());
+      window.CE2 = {};
+      assert(crazyegg.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.__adroll', function (done) {
-      assert(!window.CE2);
+    beforeEach(function () {
+      sinon.stub(crazyegg, 'load');
+      crazyegg.initialize();
+      crazyegg.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!crazyegg.loaded());
       crazyegg.load(function (err) {
         if (err) return done(err);
-        assert(window.CE2);
+        assert(crazyegg.loaded());
         done();
       });
     });

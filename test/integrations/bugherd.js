@@ -56,12 +56,26 @@ describe('BugHerd', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._bugHerd', function () {
+      assert(!bugherd.loaded());
+      window._bugHerd = {};
+      assert(bugherd.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window._bugHerd', function (done) {
-      assert(!window._bugHerd);
+    beforeEach(function () {
+      sinon.stub(bugherd, 'load');
+      bugherd.initialize();
+      bugherd.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!bugherd.loaded());
       bugherd.load(function (err) {
         if (err) return done(err);
-        assert(window._bugHerd);
+        assert(bugherd.loaded());
         done();
       });
     });

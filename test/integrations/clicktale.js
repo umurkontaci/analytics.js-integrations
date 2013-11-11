@@ -57,12 +57,26 @@ describe('ClickTale', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.ClickTale', function () {
+      assert(!clicktale.loaded());
+      window.ClickTale = {};
+      assert(clicktale.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.ClickTale', function (done) {
-      assert(!window.ClickTale);
+    beforeEach(function () {
+      sinon.stub(clicktale, 'load');
+      clicktale.initialize();
+      clicktale.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!clicktale.loaded());
       clicktale.load(function (err) {
         if (err) return done(err);
-        assert(window.ClickTale);
+        assert(clicktale.loaded());
         done();
       });
     });

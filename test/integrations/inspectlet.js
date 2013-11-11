@@ -60,6 +60,14 @@ describe('Inspectlet', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.__insp_', function () {
+      assert(!inspectlet.loaded());
+      window.__insp_ = {};
+      assert(inspectlet.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(inspectlet, 'load');
@@ -67,10 +75,11 @@ describe('Inspectlet', function () {
       inspectlet.load.restore();
     });
 
-    it('should create window.__insp_', function (done) {
-      assert(!window.__insp_);
-      inspectlet.load(function () {
-        assert(window.__insp_);
+    it('should change loaded state', function (done) {
+      assert(!inspectlet.loaded());
+      inspectlet.load(function (err) {
+        if (err) return done(err);
+        assert(inspectlet.loaded());
         done();
       });
     });

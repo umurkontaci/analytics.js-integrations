@@ -47,11 +47,27 @@ describe('userfox', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._ufq.push', function () {
+      window._ufq = [];
+      assert(!userfox.loaded());
+      window._ufq.push = function(){};
+      assert(userfox.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should replace window._ufq.push', function (done) {
+    beforeEach(function () {
+      sinon.stub(userfox, 'load');
+      userfox.initialize();
+      userfox.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!userfox.loaded());
       userfox.load(function (err) {
         if (err) return done(err);
-        assert(window._ufq.push !== Array.prototype.push);
+        assert(userfox.loaded());
         done();
       });
     });

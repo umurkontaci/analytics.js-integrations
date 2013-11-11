@@ -48,11 +48,27 @@ describe('Perfect Audience', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._pa.track', function () {
+      window._pa = [];
+      assert(!pa.loaded());
+      window._pa.track = function(){};
+      assert(pa.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window._pa.track', function (done) {
+    beforeEach(function () {
+      sinon.stub(pa, 'load');
+      pa.initialize();
+      pa.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!pa.loaded());
       pa.load(function (err) {
         if (err) return done(err);
-        assert(window._pa.track);
+        assert(pa.loaded());
         done();
       });
     });

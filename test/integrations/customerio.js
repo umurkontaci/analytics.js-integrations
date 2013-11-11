@@ -35,7 +35,7 @@ describe('Customer.io', function () {
 
   describe('#initialize', function () {
     beforeEach(function () {
-      customerio.load = sinon.spy();
+      sinon.stub(customerio, 'load');
     });
 
     it('should create the window._cio object', function () {
@@ -50,6 +50,15 @@ describe('Customer.io', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._cio.pageHasLoaded', function () {
+      window._cio = [];
+      assert(!customerio.loaded());
+      window._cio.pageHasLoaded = true;
+      assert(customerio.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(customerio, 'load');
@@ -57,11 +66,11 @@ describe('Customer.io', function () {
       customerio.load.restore();
     });
 
-    it('should set window._cio.pageHasLoaded', function (done) {
-      assert(!window._cio.pageHasLoaded);
+    it('should change loaded state', function (done) {
+      assert(!customerio.loaded());
       customerio.load(function (err) {
         if (err) return done(err);
-        assert(window._cio.pageHasLoaded);
+        assert(customerio.loaded());
         done();
       });
     });

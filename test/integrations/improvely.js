@@ -63,12 +63,27 @@ describe('Improvely', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.improvely.identify', function () {
+      window.improvely = {};
+      assert(!improvely.loaded());
+      window.improvely.identify = function(){};
+      assert(improvely.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.improvely', function (done) {
-      assert(!window.improvely);
+    beforeEach(function () {
+      sinon.stub(improvely, 'load');
+      improvely.initialize();
+      improvely.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!improvely.loaded());
       improvely.load(function (err) {
         if (err) return done(err);
-        assert(window.improvely);
+        assert(improvely.loaded());
         done();
       });
     });

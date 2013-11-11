@@ -48,6 +48,15 @@ describe('Vero', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._veroq.push', function () {
+      window._veroq = [];
+      assert(!vero.loaded());
+      window._veroq.push = function(){};
+      assert(vero.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(vero, 'load');
@@ -55,10 +64,11 @@ describe('Vero', function () {
       vero.load.restore();
     });
 
-    it('should replace window._veroq.push', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!vero.loaded());
       vero.load(function (err) {
         if (err) return done(err);
-        assert(window._veroq.push !== Array.prototype.push);
+        assert(vero.loaded());
         done();
       });
     });

@@ -48,6 +48,15 @@ describe('USERcycle', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._uc.push', function () {
+      window._uc = [];
+      assert(!usercycle.loaded());
+      window._uc.push = function(){};
+      assert(usercycle.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(usercycle, 'load');
@@ -55,10 +64,11 @@ describe('USERcycle', function () {
       usercycle.load.restore();
     });
 
-    it('should load the window._uc script', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!usercycle.loaded());
       usercycle.load(function (err) {
         if (err) return done(err);
-        assert(window._uc.push !== Array.prototype.push);
+        assert(usercycle.loaded());
         done();
       });
     });

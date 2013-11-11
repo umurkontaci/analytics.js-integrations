@@ -38,11 +38,26 @@ describe('Awesomatic', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.Awesomatic', function () {
+      assert(!awesomatic.loaded());
+      window.Awesomatic = {};
+      assert(awesomatic.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.Awesomatic', function (done) {
+    beforeEach(function () {
+      sinon.stub(awesomatic, 'load');
+      awesomatic.initialize();
+      awesomatic.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!awesomatic.loaded());
       awesomatic.load(function (err) {
         if (err) return done(err);
-        assert(window.Awesomatic);
+        assert(awesomatic.loaded());
         done();
       });
     });

@@ -15,7 +15,6 @@ describe('Amplitude', function () {
 
   beforeEach(function () {
     analytics.use(Amplitude);
-    analytics.use(Amplitude);
     amplitude = new Amplitude.Integration(settings);
     amplitude.initialize(); // noop
   });
@@ -52,11 +51,27 @@ describe('Amplitude', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.amplitude.options', function () {
+      window.amplitude = {};
+      assert(!amplitude.loaded());
+      window.amplitude.options = {};
+      assert(amplitude.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should replace window.amplitude', function (done) {
+    beforeEach(function () {
+      sinon.stub(amplitude, 'load');
+      amplitude.initialize();
+      amplitude.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!amplitude.loaded());
       amplitude.load(function (err) {
         if (err) return done(err);
-        assert(window.amplitude.prototype !== Array.prototype);
+        assert(amplitude.loaded());
         done();
       });
     });

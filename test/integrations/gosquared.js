@@ -67,12 +67,26 @@ describe('GoSquared', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._gs', function () {
+      assert(!gosquared.loaded());
+      window._gs = {};
+      assert(gosquared.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window._gs', function (done) {
-      assert(!window._gs);
+    beforeEach(function () {
+      sinon.stub(gosquared, 'load');
+      gosquared.initialize();
+      gosquared.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!gosquared.loaded());
       gosquared.load(function (err) {
         if (err) return done(err);
-        assert(window._gs);
+        assert(gosquared.loaded());
         done();
       });
     });

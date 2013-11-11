@@ -39,12 +39,26 @@ describe('MouseStats', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.msaa', function () {
+      assert(!mousestats.loaded());
+      window.msaa = {};
+      assert(mousestats.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.msaa', function (done) {
-      assert(!window.msaa);
+    beforeEach(function () {
+      sinon.stub(mousestats, 'load');
+      mousestats.initialize();
+      mousestats.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!mousestats.loaded());
       mousestats.load(function (err) {
         if (err) return done(err);
-        assert(window.msaa);
+        assert(mousestats.loaded());
         done();
       });
     });

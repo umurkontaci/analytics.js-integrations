@@ -52,6 +52,15 @@ describe('Qualaroo', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._kiq.push', function () {
+      window._kiq = [];
+      assert(!qualaroo.loaded());
+      window._kiq.push = function(){};
+      assert(qualaroo.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(qualaroo, 'load');
@@ -59,11 +68,14 @@ describe('Qualaroo', function () {
       qualaroo.load.restore();
     });
 
-    it('should create window._kiq', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!qualaroo.loaded());
       qualaroo.load(function (err) {
         if (err) return done(err);
         // it makes an extra ajax request to load itself
-        when(function () { return window._kiq.push !== Array.prototype.push; }, done);
+        when(function () {
+          return qualaroo.loaded();
+        }, done);
       });
     });
   });

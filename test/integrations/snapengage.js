@@ -31,12 +31,26 @@ describe('SnapEngage', function () {
       .option('apiKey', '');
   });
 
+  describe('#loaded', function () {
+    it('should test window.SnapABug', function () {
+      assert(!snapengage.loaded());
+      window.SnapABug = {};
+      assert(snapengage.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.SnapABug', function (done) {
-      assert(!window.SnapABug);
+    beforeEach(function () {
+      sinon.stub(snapengage, 'load');
+      snapengage.initialize();
+      snapengage.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!snapengage.loaded());
       snapengage.load(function (err) {
         if (err) return done(err);
-        assert(window.SnapABug);
+        assert(snapengage.loaded());
         done();
       });
     });

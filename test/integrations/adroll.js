@@ -66,6 +66,18 @@ describe('AdRoll', function () {
     });
   });
 
+  describe('#loaded', function () {
+    after(function () {
+      window.__adroll = undefined;
+    });
+
+    it('should test window.__adroll', function () {
+      assert(!adroll.loaded());
+      window.__adroll = {};
+      assert(adroll.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(adroll, 'load');
@@ -73,12 +85,14 @@ describe('AdRoll', function () {
       adroll.load.restore();
     });
 
-    it('should create window.__adroll', function (done) {
-      assert(!window.__adroll);
+    it('should change loaded state', function (done) {
+      assert(!adroll.loaded());
       adroll.load(function (err) {
         if (err) return done(err);
-        assert(window.__adroll);
-        done();
+        setTimeout(function () {
+          assert(adroll.loaded());
+          done();
+        }, 1000);
       });
     });
   });

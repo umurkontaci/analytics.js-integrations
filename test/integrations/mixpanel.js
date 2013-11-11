@@ -52,6 +52,15 @@ describe('Mixpanel', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.mixpanel.config', function () {
+      window.mixpanel = {};
+      assert(!mixpanel.loaded());
+      window.mixpanel.config = {};
+      assert(mixpanel.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(mixpanel, 'load');
@@ -59,10 +68,11 @@ describe('Mixpanel', function () {
       mixpanel.load.restore();
     });
 
-    it('should create window.mixpanel.config', function (done) {
+    it('should change loaded state', function (done) {
+      assert(!mixpanel.loaded());
       mixpanel.load(function (err) {
         if (err) return done(err);
-        assert(window.mixpanel.config);
+        assert(mixpanel.loaded());
         done();
       });
     });

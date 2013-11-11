@@ -57,11 +57,26 @@ describe('Chartbeat', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.pSUPERFLY', function () {
+      assert(!chartbeat.loaded());
+      window.pSUPERFLY = {};
+      assert(chartbeat.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.pSUPERFLY', function (done) {
+    beforeEach(function () {
+      sinon.stub(chartbeat, 'load');
+      chartbeat.initialize();
+      chartbeat.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!chartbeat.loaded());
       chartbeat.load(function (err) {
         if (err) return done(err);
-        assert(window.pSUPERFLY);
+        assert(chartbeat.loaded());
         done();
       });
     });

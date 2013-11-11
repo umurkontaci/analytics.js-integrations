@@ -49,6 +49,15 @@ describe('Pingdom', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._prum.push', function () {
+      window._prum = [];
+      assert(!pingdom.loaded());
+      window._prum.push = function(){};
+      assert(pingdom.loaded());
+    });
+  });
+
   describe('#load', function () {
     beforeEach(function () {
       sinon.stub(pingdom, 'load');
@@ -56,9 +65,11 @@ describe('Pingdom', function () {
       pingdom.load.restore();
     });
 
-    it('should create window._prum', function (done) {
-      pingdom.load(function () {
-        assert(window._prum.push !== Array.prototype.push);
+    it('should change loaded state', function (done) {
+      assert(!pingdom.loaded());
+      pingdom.load(function (err) {
+        if (err) return done(err);
+        assert(pingdom.loaded());
         done();
       });
     });

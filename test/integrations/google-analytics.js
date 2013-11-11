@@ -89,6 +89,14 @@ describe('Google Analytics', function () {
       });
     });
 
+    describe('#loaded', function () {
+      it('should test window.gaplugins', function () {
+        assert(!ga.loaded());
+        window.gaplugins = {};
+        assert(ga.loaded());
+      });
+    });
+
     describe('#load', function () {
       beforeEach(function () {
         sinon.stub(ga, 'load');
@@ -96,11 +104,11 @@ describe('Google Analytics', function () {
         ga.load.restore();
       });
 
-      it('should create window.gaplugins', function (done) {
-        assert(!window.gaplugins);
+      it('should change loaded state', function (done) {
+        assert(!ga.loaded());
         ga.load(function (err) {
           if (err) return done(err);
-          assert(window.gaplugins);
+          assert(ga.loaded());
           done();
         });
       });
@@ -298,6 +306,15 @@ describe('Google Analytics', function () {
       });
     });
 
+    describe('#loaded', function () {
+      it('should test window._gaq.push', function () {
+        window._gaq = [];
+        assert(!ga.loaded());
+        window._gaq.push = function(){};
+        assert(ga.loaded());
+      });
+    });
+
     describe('#load', function () {
       beforeEach(function () {
         sinon.stub(ga, 'load');
@@ -305,10 +322,11 @@ describe('Google Analytics', function () {
         ga.load.restore();
       });
 
-      it('should replace window._gaq.push', function (done) {
+      it('should change loaded state', function (done) {
+        assert(!ga.loaded());
         ga.load(function (err) {
           if (err) return done(err);
-          assert(window._gaq.push !== Array.prototype.push);
+          assert(ga.loaded());
           done();
         });
       });

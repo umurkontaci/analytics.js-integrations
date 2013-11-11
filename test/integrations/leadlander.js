@@ -48,12 +48,26 @@ describe('LeadLander', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window.trackalyzer', function () {
+      assert(!leadlander.loaded());
+      window.trackalyzer = {};
+      assert(leadlander.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should create window.trackalyzer', function (done) {
-      assert(!window.trackalyzer);
+    beforeEach(function () {
+      sinon.stub(leadlander, 'load');
+      leadlander.initialize();
+      leadlander.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!leadlander.loaded());
       leadlander.load(function (err) {
         if (err) return done(err);
-        assert(window.trackalyzer);
+        assert(leadlander.loaded());
         done();
       });
     });

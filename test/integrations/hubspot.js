@@ -49,11 +49,27 @@ describe('HubSpot', function () {
     });
   });
 
+  describe('#loaded', function () {
+    it('should test window._hsq.push', function () {
+      window._hsq = [];
+      assert(!hubspot.loaded());
+      window._hsq.push = function(){};
+      assert(hubspot.loaded());
+    });
+  });
+
   describe('#load', function () {
-    it('should replace window._hsq.push', function (done) {
+    beforeEach(function () {
+      sinon.stub(hubspot, 'load');
+      hubspot.initialize();
+      hubspot.load.restore();
+    });
+
+    it('should change loaded state', function (done) {
+      assert(!hubspot.loaded());
       hubspot.load(function (err) {
         if (err) return done(err);
-        assert(window._hsq.push !== Array.prototype.push);
+        assert(hubspot.loaded());
         done();
       });
     });
