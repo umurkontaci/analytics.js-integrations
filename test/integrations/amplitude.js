@@ -77,6 +77,40 @@ describe('Amplitude', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      amplitude.initialize();
+      window.amplitude.logEvent = sinon.spy();
+    });
+
+    it('should not track unnamed pages by default', function () {
+      amplitude.page();
+      assert(!window.amplitude.logEvent.called);
+    });
+
+    it('should track unnamed pages if enabled', function () {
+      amplitude.options.trackAllPages = true;
+      amplitude.page(null, null, {});
+      assert(window.amplitude.logEvent.calledWith('Loaded a Page', {}));
+    });
+
+    it('should track named pages by default', function () {
+      amplitude.page(null, 'Signup', {});
+      assert(window.amplitude.logEvent.calledWith('Viewed Signup Page', {}));
+    });
+
+    it('should not track named pages if disabled', function () {
+      amplitude.options.trackNamedPages = false;
+      amplitude.page(null, 'Signup', {});
+      assert(!window.amplitude.logEvent.called);
+    });
+
+    it('should track section pages by default', function () {
+      amplitude.page('About', 'Team', {});
+      assert(window.amplitude.logEvent.calledWith('Viewed About Team Page', {}));
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function () {
       amplitude.initialize();
@@ -115,39 +149,6 @@ describe('Amplitude', function () {
     it('should send an event and properties', function () {
       amplitude.track('event', { property: true });
       assert(window.amplitude.logEvent.calledWith('event', { property: true }));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function () {
-      amplitude.initialize();
-      window.amplitude.logEvent = sinon.spy();
-    });
-
-    it('should not track unnamed pages by default', function () {
-      amplitude.page();
-      assert(!window.amplitude.logEvent.called);
-    });
-
-    it('should track unnamed pages if enabled', function () {
-      amplitude.options.trackAllPages = true;
-      amplitude.page(null, { url: window.location.href });
-      assert(window.amplitude.logEvent.calledWith('Loaded a Page', {
-        url: window.location.href
-      }));
-    });
-
-    it('should track named pages by default', function () {
-      amplitude.page('Signup', { url: window.location.href });
-      assert(window.amplitude.logEvent.calledWith('Viewed Signup Page', {
-        url: window.location.href
-      }));
-    });
-
-    it('should not track named pages if disabled', function () {
-      amplitude.options.trackNamedPages = false;
-      amplitude.page('Signup', { url: window.location.href });
-      assert(!window.amplitude.logEvent.called);
     });
   });
 });

@@ -88,14 +88,19 @@ describe('Chartbeat', function () {
       window.pSUPERFLY = { virtualPage: sinon.spy() };
     });
 
-    it('should send default url', function () {
-      chartbeat.page(null, { path: '/path' });
-      assert(window.pSUPERFLY.virtualPage.calledWith('/path'));
+    it('should send a path and title', function () {
+      chartbeat.page(null, null, { path: '/path', title: 'title' });
+      assert(window.pSUPERFLY.virtualPage.calledWith('/path', 'title'));
     });
 
-    it('should send a url', function () {
-      chartbeat.page('Page', { path: '/path' });
-      assert(window.pSUPERFLY.virtualPage.calledWith('/path', 'Page'));
+    it('should prefer a name', function () {
+      chartbeat.page(null, 'name', { path: '/path', title: 'title' });
+      assert(window.pSUPERFLY.virtualPage.calledWith('/path', 'name'));
+    });
+
+    it('should prefer a name and section', function () {
+      chartbeat.page('section', 'name', { path: '/path', title: 'title' });
+      assert(window.pSUPERFLY.virtualPage.calledWith('/path', 'section name'));
     });
   });
 

@@ -87,6 +87,50 @@ describe('Keen IO', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function (done) {
+      keen.initialize();
+      keen.once('load', function () {
+        window.Keen.addEvent = sinon.spy();
+        done();
+      });
+    });
+
+    it('should not track anonymous pages by default', function () {
+      keen.page();
+      assert(!window.Keen.addEvent.called);
+    });
+
+    it('should track anonymous pages when the option is on', function () {
+      keen.options.trackAllPages = true;
+      keen.page();
+      assert(window.Keen.addEvent.calledWith('Loaded a Page'));
+    });
+
+    it('should track named pages by default', function () {
+      keen.page(null, 'Name');
+      assert(window.Keen.addEvent.calledWith('Viewed Name Page'));
+    });
+
+    it('should not track named pages when the option is off', function () {
+      keen.options.trackNamedPages = false;
+      keen.page(null, 'Name');
+      assert(!window.Keen.addEvent.called);
+    });
+
+    it('should track sectioned pages by default', function () {
+      keen.page('Section', 'Name');
+      assert(window.Keen.addEvent.calledWith('Viewed Section Name Page'));
+    });
+
+    it('should not track sectioned pages when the option is off', function () {
+      keen.options.trackNamedPages = false;
+      keen.options.trackSectionedPages = false;
+      keen.page('Section', 'Name');
+      assert(!window.Keen.addEvent.called);
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function (done) {
       keen.initialize();
@@ -129,33 +173,6 @@ describe('Keen IO', function () {
     it('should pass an event and properties', function () {
       keen.track('event', { property: true });
       assert(window.Keen.addEvent.calledWith('event', { property: true }));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function (done) {
-      keen.initialize();
-      keen.once('load', function () {
-        window.Keen.addEvent = sinon.spy();
-        done();
-      });
-    });
-
-    it('should not do anything by default', function () {
-      keen.page();
-      assert(!window.Keen.addEvent.called);
-    });
-
-    it('should track named pages', function () {
-      keen.options.trackNamedPages = true;
-      keen.page('Name');
-      assert(window.Keen.addEvent.calledWith('Viewed Name Page'));
-    });
-
-    it('should track anonymous pages', function () {
-      keen.options.trackAllPages = true;
-      keen.page();
-      assert(window.Keen.addEvent.calledWith('Loaded a Page'));
     });
   });
 

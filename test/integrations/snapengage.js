@@ -73,8 +73,13 @@ describe('SnapEngage', function () {
       });
     });
 
+    it('should not send just an id', function () {
+      snapengage.identify('id');
+      assert(!window.SnapABug.setUserEmail.called);
+    });
+
     it('should send an email', function () {
-      snapengage.identify(null, { email: 'name@example.com' });
+      snapengage.identify('id', { email: 'name@example.com' });
       assert(window.SnapABug.setUserEmail.calledWith('name@example.com'));
     });
   });

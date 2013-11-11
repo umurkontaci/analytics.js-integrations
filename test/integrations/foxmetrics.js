@@ -66,6 +66,42 @@ describe('FoxMetrics', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      foxmetrics.initialize();
+      window._fxm.push = sinon.spy();
+    });
+
+
+    it('should send a page view', function () {
+      foxmetrics.page();
+      assert(window._fxm.push.calledWith([
+        '_fxm.pages.view',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      ]));
+    });
+
+    it('should send page properties', function () {
+      foxmetrics.page('section', 'name', {
+        title: 'title',
+        url: 'url',
+        referrer: 'referrer'
+      });
+      assert(window._fxm.push.calledWith([
+        '_fxm.pages.view',
+        'title',
+        'name',
+        'section',
+        'url',
+        'referrer'
+      ]));
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function () {
       foxmetrics.initialize();
@@ -170,40 +206,17 @@ describe('FoxMetrics', function () {
         { category: 'category' }
       ]));
     });
-  });
 
-  describe('#page', function () {
-    beforeEach(function () {
-      foxmetrics.initialize();
-      window._fxm.push = sinon.spy();
-    });
-
-
-    it('should send a page view', function () {
-      foxmetrics.page();
+    it('should send a stored section', function () {
+      foxmetrics.page('section');
+      foxmetrics.track('event', { category: 'category' });
       assert(window._fxm.push.calledWith([
         '_fxm.pages.view',
         undefined,
         undefined,
-        undefined,
+        'section',
         undefined,
         undefined
-      ]));
-    });
-
-    it('should send page properties', function () {
-      foxmetrics.page('name', {
-        title: 'title',
-        url: 'url',
-        referrer: 'referrer'
-      });
-      assert(window._fxm.push.calledWith([
-        '_fxm.pages.view',
-        'title',
-        'name',
-        undefined,
-        'url',
-        'referrer'
       ]));
     });
   });

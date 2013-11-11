@@ -120,36 +120,24 @@ describe('Woopra', function () {
       window.woopra.track = sinon.spy();
     });
 
-    it('should send a "pv" event with default properties', function () {
+    it('should send a page view', function () {
       woopra.page();
-      assert(window.woopra.track.calledWith('pv', {
-        title: undefined,
-        url: undefined
-      }));
+      assert(window.woopra.track.calledWith('pv', {}));
     });
 
-    it('should send a "pv" event with the specified name', function () {
-      woopra.page('Signup');
-      assert(window.woopra.track.calledWith('pv', {
-        title: 'Signup',
-        url: undefined
-      }));
+    it('should send a title', function () {
+      woopra.page(null, null, { title: 'title' });
+      assert(window.woopra.track.calledWith('pv', { title: 'title' }));
     });
 
-    it('should pass a title', function () {
-      woopra.page(null, { title: 'x' });
-      assert(window.woopra.track.calledWith('pv', {
-        title: 'x',
-        url: undefined
-      }));
+    it('should prefer a name', function () {
+      woopra.page(null, 'name', { title: 'title' });
+      assert(window.woopra.track.calledWith('pv', { title: 'name' }));
     });
 
-    it('should pass a url', function () {
-      woopra.page('Signup', { url: '/signup' });
-      assert(window.woopra.track.calledWith('pv', {
-        url: '/signup',
-        title: 'Signup'
-      }));
+    it('should prefer a section and name', function () {
+      woopra.page('section', 'name', { title: 'title' });
+      assert(window.woopra.track.calledWith('pv', { title: 'section name' }));
     });
   });
 });

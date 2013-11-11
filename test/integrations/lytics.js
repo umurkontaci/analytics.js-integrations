@@ -80,6 +80,18 @@ describe('Lytics', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      lytics.initialize();
+      window.jstag.send = sinon.spy();
+    });
+
+    it('should call send', function () {
+      lytics.page(null, null, { property: true });
+      assert(window.jstag.send.calledWith({ property: true }));
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function () {
       lytics.initialize();
@@ -116,18 +128,6 @@ describe('Lytics', function () {
     it('should send an event and properties', function () {
       lytics.track('event', { property: true });
       assert(window.jstag.send.calledWith({ _e: 'event', property: true }));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function () {
-      lytics.initialize();
-      window.jstag.send = sinon.spy();
-    });
-
-    it('should call send', function () {
-      lytics.page(null, { property: true });
-      assert(window.jstag.send.calledWith({ property: true }));
     });
   });
 

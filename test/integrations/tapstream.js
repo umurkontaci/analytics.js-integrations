@@ -76,6 +76,49 @@ describe('Tapstream', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      tapstream.initialize();
+      window._tsq.push = sinon.spy();
+    });
+
+    it('should track all pages by default', function () {
+      tapstream.page();
+      assert(window._tsq.push.calledWith(['fireHit', 'loaded-a-page', [undefined]]));
+    });
+
+    it('should not track all pages if the option is off', function () {
+      tapstream.options.trackAllPages = false;
+      tapstream.page();
+      assert(!window._tsq.push.called);
+    });
+
+    it('should track named pages by default', function () {
+      tapstream.page(null, 'Name');
+      assert(window._tsq.push.calledWith(['fireHit', 'viewed-name-page', [undefined]]));
+    });
+
+    it('should not track named pages if the option is off', function () {
+      tapstream.options.trackAllPages = false;
+      tapstream.options.trackNamedPages = false;
+      tapstream.page(null, 'Name');
+      assert(!window._tsq.push.called);
+    });
+
+    it('should track sectioned pages by default', function () {
+      tapstream.page(null, 'Name');
+      assert(window._tsq.push.calledWith(['fireHit', 'viewed-name-page', [undefined]]));
+    });
+
+    it('should not track setioned pages if the option is off', function () {
+      tapstream.options.trackAllPages = false;
+      tapstream.options.trackNamedPages = false;
+      tapstream.options.trackSectionedPages = false;
+      tapstream.page('Section', 'Name');
+      assert(!window._tsq.push.called);
+    });
+  });
+
   describe('#track', function () {
     beforeEach(function () {
       tapstream.initialize();
@@ -85,45 +128,6 @@ describe('Tapstream', function () {
     it('should send an event as a slug', function () {
       tapstream.track('Event');
       assert(window._tsq.push.calledWith(['fireHit', 'event', [undefined]]));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function () {
-      tapstream.initialize();
-      window._tsq.push = sinon.spy();
-    });
-
-    it('should send a "Loaded a Page" event', function () {
-      tapstream.page();
-      assert(window._tsq.push.calledWith([
-        'fireHit',
-        'loaded-a-page',
-        [undefined]
-      ]));
-    });
-
-    it('should send a named page', function () {
-      tapstream.page('Signup');
-      assert(window._tsq.push.calledWith([
-        'fireHit',
-        'loaded-a-page',
-        [undefined]
-      ]));
-      assert(window._tsq.push.calledWith([
-        'fireHit',
-        'viewed-signup-page',
-        [undefined]
-      ]));
-    });
-
-    it('should send unnamed pages', function () {
-      tapstream.page(undefined, { url: 'test' });
-      assert(window._tsq.push.calledWith([
-        'fireHit',
-        'loaded-a-page',
-        ['test']
-      ]));
     });
   });
 });

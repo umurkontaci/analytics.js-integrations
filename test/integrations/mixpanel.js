@@ -78,6 +78,47 @@ describe('Mixpanel', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      mixpanel.initialize();
+      window.mixpanel.track = sinon.spy();
+    });
+
+    it('should not track anonymous pages by default', function () {
+      mixpanel.page();
+      assert(!window.mixpanel.track.called);
+    });
+
+    it('should track anonymous pages when the option is on', function () {
+      mixpanel.options.trackAllPages = true;
+      mixpanel.page();
+      assert(window.mixpanel.track.calledWith('Loaded a Page'));
+    });
+
+    it('should track named pages by default', function () {
+      mixpanel.page(null, 'Name');
+      assert(window.mixpanel.track.calledWith('Viewed Name Page'));
+    });
+
+    it('should not track named pages when the option is off', function () {
+      mixpanel.options.trackNamedPages = false;
+      mixpanel.page(null, 'Name');
+      assert(!window.mixpanel.track.called);
+    });
+
+    it('should track section pages by default', function () {
+      mixpanel.page('Section', 'Name');
+      assert(window.mixpanel.track.calledWith('Viewed Section Name Page'));
+    });
+
+    it('should not track section pages when the option is off', function () {
+      mixpanel.options.trackNamedPages = false;
+      mixpanel.options.trackSectionedPages = false;
+      mixpanel.page('Section', 'Name');
+      assert(!window.mixpanel.track.called);
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function () {
       mixpanel.initialize();
@@ -198,30 +239,6 @@ describe('Mixpanel', function () {
       mixpanel.options.people = true;
       mixpanel.track('event', { revenue: 9.99 });
       assert(window.mixpanel.people.track_charge.calledWith(9.99));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function () {
-      mixpanel.initialize();
-      window.mixpanel.track = sinon.spy();
-    });
-
-    it('should not send an event by default', function () {
-      mixpanel.page();
-      assert(!window.mixpanel.track.called);
-    });
-
-    it('should track named pages', function () {
-      mixpanel.options.trackNamedPages = true;
-      mixpanel.page('Name', { property: true });
-      assert(window.mixpanel.track.calledWith('Viewed Name Page', { property: true }));
-    });
-
-    it('should track all pages', function () {
-      mixpanel.options.trackAllPages = true;
-      mixpanel.page(null, { property: true });
-      assert(window.mixpanel.track.calledWith('Loaded a Page', { property: true }));
     });
   });
 

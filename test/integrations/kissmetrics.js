@@ -65,6 +65,35 @@ describe('KISSmetrics', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      window._kmq.push = sinon.spy();
+    });
+
+    it('should track named pages by default', function () {
+      kissmetrics.page(null, 'Name');
+      assert(window._kmq.push.calledWith(['record', 'Viewed Name Page', {}]));
+    });
+
+    it('should not track named pages when the option is off', function () {
+      kissmetrics.options.trackNamedPages = false;
+      kissmetrics.page(null, 'Name');
+      assert(!window._kmq.push.called);
+    });
+
+    it('should track sectioned pages by default', function () {
+      kissmetrics.page('Section', 'Name');
+      assert(window._kmq.push.calledWith(['record', 'Viewed Section Name Page', {}]));
+    });
+
+    it('should not track sectioned pages when the option is off', function () {
+      kissmetrics.options.trackNamedPages = false;
+      kissmetrics.options.trackSectionedPages = false;
+      kissmetrics.page('Section', 'Name');
+      assert(!window._kmq.push.called);
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function () {
       window._kmq.push = sinon.spy();

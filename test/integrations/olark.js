@@ -58,6 +58,74 @@ describe('Olark', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      olark.initialize();
+      window.olark = sinon.spy(window, 'olark');
+    });
+
+    afterEach(function (done) {
+      window.olark.restore();
+      shrinkThen(function () {
+        done();
+      });
+    });
+
+    it('should not send an event when the chat isnt open', function () {
+      olark.page();
+      assert(!window.olark.called);
+    });
+
+    it('should not send a message without a name or url', function (done) {
+      expandThen(function () {
+        window.olark.reset();
+        olark.page();
+        assert(!window.olark.called);
+        done();
+      });
+    });
+
+    it('should send a page name', function (done) {
+      expandThen(function () {
+        olark.page(null, 'Name');
+        assert(window.olark.calledWith('api.chat.sendNotificationToOperator', {
+          body: 'looking at name page'
+        }));
+        done();
+      });
+    });
+
+    it('should send a page section and name', function (done) {
+      expandThen(function () {
+        olark.page('Section', 'Name');
+        assert(window.olark.calledWith('api.chat.sendNotificationToOperator', {
+          body: 'looking at section name page'
+        }));
+        done();
+      });
+    });
+
+    it('should send a page url', function (done) {
+      expandThen(function () {
+        olark.page(null, null, { url: 'url' });
+        assert(window.olark.calledWith('api.chat.sendNotificationToOperator', {
+          body: 'looking at url'
+        }));
+        done();
+      });
+    });
+
+    it('should not send an event when page is disabled', function (done) {
+      olark.options.page = false;
+      expandThen(function () {
+        window.olark.reset();
+        olark.page();
+        assert(!window.olark.called);
+        done();
+      });
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function () {
       olark.initialize();
@@ -225,61 +293,4 @@ describe('Olark', function () {
     });
   });
 
-  describe('#page', function () {
-    beforeEach(function () {
-      olark.initialize();
-      window.olark = sinon.spy(window, 'olark');
-    });
-
-    afterEach(function (done) {
-      window.olark.restore();
-      shrinkThen(function () {
-        done();
-      });
-    });
-
-    it('should not send an event when the chat isnt open', function () {
-      olark.page();
-      assert(!window.olark.called);
-    });
-
-    it('should not send a message without a name or url', function (done) {
-      expandThen(function () {
-        window.olark.reset();
-        olark.page();
-        assert(!window.olark.called);
-        done();
-      });
-    });
-
-    it('should send a page name', function (done) {
-      expandThen(function () {
-        olark.page('Name');
-        assert(window.olark.calledWith('api.chat.sendNotificationToOperator', {
-          body: 'looking at name page'
-        }));
-        done();
-      });
-    });
-
-    it('should send a page url', function (done) {
-      expandThen(function () {
-        olark.page(undefined, { url: 'url' });
-        assert(window.olark.calledWith('api.chat.sendNotificationToOperator', {
-          body: 'looking at url'
-        }));
-        done();
-      });
-    });
-
-    it('should not send an event when page is disabled', function (done) {
-      olark.options.page = false;
-      expandThen(function () {
-        window.olark.reset();
-        olark.page();
-        assert(!window.olark.called);
-        done();
-      });
-    });
-  });
 });

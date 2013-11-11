@@ -119,6 +119,66 @@ describe('Google Analytics', function () {
       });
     });
 
+    describe('#page', function () {
+      beforeEach(function () {
+        ga.initialize();
+        window.ga = sinon.spy();
+      });
+
+      it('should send a page view', function () {
+        ga.page();
+        assert(window.ga.calledWith('send', 'pageview', {
+          page: undefined,
+          title: undefined,
+          url: undefined
+        }));
+      });
+
+      it('should send a page properties', function () {
+        ga.page(null, 'name', { url: 'url', path: '/path' });
+        assert(window.ga.calledWith('send', 'pageview', {
+          page: '/path',
+          title: 'name',
+          url: 'url'
+        }));
+      });
+
+      it('should send a named page event', function () {
+        ga.page(null, 'Name');
+        assert(window.ga.calledWith('send', 'event', {
+          eventCategory: 'All',
+          eventAction: 'Viewed Name Page',
+          eventLabel: undefined,
+          eventValue: 0,
+          nonInteraction: true
+        }));
+      });
+
+      it('should not send a named page event when the option is off', function () {
+        ga.options.trackNamedPages = false;
+        ga.page(null, 'Name');
+        assert(!window.ga.calledTwice);
+      });
+
+      it('should send a section page event', function () {
+        ga.page('Section', 'Name');
+        assert(window.ga.calledWith('send', 'event', {
+          eventCategory: 'Section',
+          eventAction: 'Viewed Section Name Page',
+          eventLabel: undefined,
+          eventValue: 0,
+          nonInteraction: true
+        }));
+      });
+
+      it('should not send a section page event when the option is off', function () {
+        ga.options.trackNamedPages = false;
+        ga.options.trackSectionedPages = false;
+        ga.page('Section', 'Name');
+        assert(!window.ga.calledTwice);
+      });
+    });
+
     describe('#track', function () {
       beforeEach(function () {
         ga.initialize();
@@ -137,9 +197,21 @@ describe('Google Analytics', function () {
       });
 
       it('should send a category property', function () {
-        ga.track('event', { category: 'Category' });
+        ga.track('event', { category: 'category' });
         assert(window.ga.calledWith('send', 'event', {
-          eventCategory: 'Category',
+          eventCategory: 'category',
+          eventAction: 'event',
+          eventLabel: undefined,
+          eventValue: 0,
+          nonInteraction: undefined
+        }));
+      });
+
+      it('should send a stored section', function () {
+        ga.page('section');
+        ga.track('event', { category: 'category' });
+        assert(window.ga.calledWith('send', 'event', {
+          eventCategory: 'section',
           eventAction: 'event',
           eventLabel: undefined,
           eventValue: 0,
@@ -199,31 +271,6 @@ describe('Google Analytics', function () {
           eventLabel: undefined,
           eventValue: 0,
           nonInteraction: true
-        }));
-      });
-    });
-
-    describe('#page', function () {
-      beforeEach(function () {
-        ga.initialize();
-        window.ga = sinon.spy();
-      });
-
-      it('should send a page view', function () {
-        ga.page();
-        assert(window.ga.calledWith('send', 'pageview', {
-          page: undefined,
-          title: undefined,
-          url: undefined
-        }));
-      });
-
-      it('should send a page properties', function () {
-        ga.page('name', { url: 'url', path: '/path' });
-        assert(window.ga.calledWith('send', 'pageview', {
-          page: '/path',
-          title: 'name',
-          url: 'url'
         }));
       });
     });
@@ -337,6 +384,46 @@ describe('Google Analytics', function () {
       });
     });
 
+    describe('#page', function () {
+      beforeEach(function () {
+        ga.initialize();
+        window._gaq.push = sinon.spy();
+      });
+
+      it('should send a page view', function () {
+        ga.page();
+        assert(window._gaq.push.calledWith(['_trackPageview', undefined]));
+      });
+
+      it('should send a path', function () {
+        ga.page(null, null, { path: '/path' });
+        assert(window._gaq.push.calledWith(['_trackPageview', '/path']));
+      });
+
+      it('should send a named page event', function () {
+        ga.page(null, 'Name');
+        assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'Viewed Name Page', undefined, 0, true]));
+      });
+
+      it('should not send a named page event when the option is off', function () {
+        ga.options.trackNamedPages = false;
+        ga.page(null, 'Name');
+        assert(!window._gaq.push.calledTwice);
+      });
+
+      it('should send a section page event', function () {
+        ga.page('Section', 'Name');
+        assert(window._gaq.push.calledWith(['_trackEvent', 'Section', 'Viewed Section Name Page', undefined, 0, true]));
+      });
+
+      it('should not send a section page event when the option is off', function () {
+        ga.options.trackNamedPages = false;
+        ga.options.trackSectionedPages = false;
+        ga.page('Section', 'Name');
+        assert(!window._gaq.push.calledTwice);
+      });
+    });
+
     describe('#track', function () {
       beforeEach(function () {
         ga.initialize();
@@ -349,8 +436,14 @@ describe('Google Analytics', function () {
       });
 
       it('should send a category property', function () {
-        ga.track('event', { category: 'Category' });
-        assert(window._gaq.push.calledWith(['_trackEvent', 'Category', 'event', undefined, 0, undefined]));
+        ga.track('event', { category: 'category' });
+        assert(window._gaq.push.calledWith(['_trackEvent', 'category', 'event', undefined, 0, undefined]));
+      });
+
+      it('should send a stored section', function () {
+        ga.page('section');
+        ga.track('event', { category: 'category' });
+        assert(window._gaq.push.calledWith(['_trackEvent', 'section', 'event', undefined, 0, undefined]));
       });
 
       it('should send a label property', function () {
@@ -376,29 +469,6 @@ describe('Google Analytics', function () {
       it('should send a non-interaction option', function () {
         ga.track('event', {}, { noninteraction: true });
         assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'event', undefined, 0, true]));
-      });
-    });
-
-    describe('#page', function () {
-      beforeEach(function () {
-        ga.initialize();
-        window._gaq.push = sinon.spy();
-      });
-
-      it('should send a page view', function () {
-        ga.page();
-        assert(window._gaq.push.calledWith(['_trackPageview', undefined]));
-      });
-
-      it('should send a path', function () {
-        ga.page(null, { path: '/path' });
-        assert(window._gaq.push.calledWith(['_trackPageview', '/path']));
-      });
-
-      it('should send a named page event', function () {
-        ga.options.trackNamedPages = true;
-        ga.page('Name');
-        assert(window._gaq.push.calledWith(['_trackEvent', 'All', 'Viewed Name Page', undefined, 0, true]));
       });
     });
   });

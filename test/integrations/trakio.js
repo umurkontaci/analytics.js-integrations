@@ -82,6 +82,60 @@ describe('trak.io', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function (done) {
+      trakio.initialize();
+      trakio.once('load', function () {
+        sinon.stub(window.trak.io, 'page_view');
+        sinon.stub(window.trak.io, 'track');
+        done();
+      });
+    });
+
+    it('should call page_view', function () {
+      trakio.page();
+      assert(window.trak.io.page_view.called);
+    });
+
+    it('should send a path and title', function () {
+      trakio.page(null, null, { path: '/path', title: 'title' });
+      assert(window.trak.io.page_view.calledWith('/path', 'title'));
+    });
+
+    it('should prefer a name', function () {
+      trakio.page(null, 'name', { title: 'title' });
+      assert(window.trak.io.page_view.calledWith(undefined, 'name'));
+    });
+
+    it('should prefer a section and name', function () {
+      trakio.page('section', 'name', { title: 'title' });
+      assert(window.trak.io.page_view.calledWith(undefined, 'section name'));
+    });
+
+    it('should track named pages by default', function () {
+      trakio.page(null, 'Name');
+      assert(window.trak.io.track.calledWith('Viewed Name Page'));
+    });
+
+    it('should not track named pages if the option is off', function () {
+      trakio.options.trackNamedPages = false;
+      trakio.page(null, 'Name');
+      assert(!window.trak.io.track.called);
+    });
+
+    it('should track sectioned pages by default', function () {
+      trakio.page('Section', 'Name');
+      assert(window.trak.io.track.calledWith('Viewed Section Name Page'));
+    });
+
+    it('should not track sectioned pages if the option is off', function () {
+      trakio.options.trackNamedPages = false;
+      trakio.options.trackSectionedPages = false;
+      trakio.page('Section', 'Name');
+      assert(!window.trak.io.track.called);
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function (done) {
       trakio.initialize();
@@ -137,37 +191,6 @@ describe('trak.io', function () {
     it('should send an event and properties', function () {
       trakio.track('event', { property: true });
       assert(window.trak.io.track.calledWith('event', { property: true }));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function (done) {
-      trakio.initialize();
-      trakio.once('load', function () {
-        window.trak.io.page_view = sinon.spy();
-        done();
-      });
-    });
-
-    it('should call pageview', function () {
-      trakio.page();
-      assert(window.trak.io.page_view.called);
-    });
-
-    it('should send a page name', function () {
-      trakio.page('Signup');
-      assert(window.trak.io.page_view.calledWith(undefined, 'Signup'));
-    });
-
-    it('should send properties if they are included', function () {
-      trakio.page(null, { url: 'url', title: 'title' });
-      assert(window.trak.io.page_view.calledWith('url', 'title'));
-    });
-
-    it('should call #track for named pages by default', function () {
-      window.trak.io.track = sinon.spy();
-      trakio.page('Signup');
-      assert(window.trak.io.track.calledWith('Viewed Signup Page'));
     });
   });
 

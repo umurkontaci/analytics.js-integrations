@@ -158,14 +158,20 @@ describe('GoSquared', function () {
         done();
       });
     });
-    it('should send a pageview', function () {
-      gosquared.page();
-      assert(window.GoSquared.q.push.calledWith(['TrackView', undefined, undefined]));
+
+    it('should send a path and title', function () {
+      gosquared.page(null, null, { path: '/path', title: 'title' });
+      assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'title']));
     });
 
-    it('should send page properties', function () {
-      gosquared.page('name', { path: '/path' });
+    it('should prefer a name', function () {
+      gosquared.page(null, 'name', { path: '/path', title: 'title' });
       assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'name']));
+    });
+
+    it('should prefer a name and section', function () {
+      gosquared.page('section', 'name', { path: '/path', title: 'title' });
+      assert(window.GoSquared.q.push.calledWith(['TrackView', '/path', 'section name']));
     });
   });
 

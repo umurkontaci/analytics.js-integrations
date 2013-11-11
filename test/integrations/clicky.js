@@ -86,6 +86,28 @@ describe('Clicky', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      clicky.initialize();
+      window.clicky = { log: sinon.spy() };
+    });
+
+    it('should send a path and title', function () {
+      clicky.page(null, null, { path: '/path', title: 'title' });
+      assert(window.clicky.log.calledWith('/path', 'title'));
+    });
+
+    it('should prefer a name', function () {
+      clicky.page(null, 'name', { path: '/path', title: 'title' });
+      assert(window.clicky.log.calledWith('/path', 'name'));
+    });
+
+    it('should prefer a name and section', function () {
+      clicky.page('section', 'name', { path: '/path', title: 'title' });
+      assert(window.clicky.log.calledWith('/path', 'section name'));
+    });
+  });
+
   describe('#identify', function () {
     beforeEach(function (done) {
       clicky.initialize();
@@ -121,23 +143,6 @@ describe('Clicky', function () {
     it('should send revenue', function () {
       clicky.track('event', { revenue: 42.99 });
       assert(window.clicky.goal.calledWith('event', 42.99));
-    });
-  });
-
-  describe('#page', function () {
-    beforeEach(function () {
-      clicky.initialize();
-      window.clicky = { log: sinon.spy() };
-    });
-
-    it('should send a path and name', function () {
-      clicky.page('Page', { path: '/path' });
-      assert(window.clicky.log.calledWith('/path', 'Page'));
-    });
-
-    it('should fallback to title', function () {
-      clicky.page(null, { title: 'Title', path: '/path' });
-      assert(window.clicky.log.calledWith('/path', 'Title'));
     });
   });
 
