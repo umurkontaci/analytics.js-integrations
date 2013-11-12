@@ -60,6 +60,8 @@ describe('KISSmetrics', function () {
     it('should test window.KM', function () {
       window.KM = undefined;
       assert(!kissmetrics.loaded());
+      window.KM = document.createElement('div');
+      assert(!kissmetrics.loaded());
       window.KM = {};
       assert(kissmetrics.loaded());
     });

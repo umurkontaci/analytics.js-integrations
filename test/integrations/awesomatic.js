@@ -41,6 +41,8 @@ describe('Awesomatic', function () {
   describe('#loaded', function () {
     it('should test window.Awesomatic', function () {
       assert(!awesomatic.loaded());
+      window.Awesomatic = document.createElement('div');
+      assert(!awesomatic.loaded());
       window.Awesomatic = {};
       assert(awesomatic.loaded());
     });

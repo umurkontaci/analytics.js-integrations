@@ -64,6 +64,8 @@ describe('Clicky', function () {
   describe('#loaded', function () {
     it('should test window.clicky', function () {
       assert(!clicky.loaded());
+      window.clicky = document.createElement('div');
+      assert(!clicky.loaded());
       window.clicky = {};
       assert(clicky.loaded());
     });

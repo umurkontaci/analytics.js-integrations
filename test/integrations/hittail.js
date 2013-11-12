@@ -43,7 +43,11 @@ describe('HitTail', function () {
   describe('#loaded', function () {
     it('should test window.htk', function () {
       assert(!hittail.loaded());
+      window.htk = document.createElement('div');
+      assert(!hittail.loaded());
       window.htk = {};
+      assert(!hittail.loaded());
+      window.htk = function(){};
       assert(hittail.loaded());
     });
   });

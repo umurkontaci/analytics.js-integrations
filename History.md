@@ -1,3 +1,17 @@
+0.2.1 - November 12, 2013
+-------------------------
+* awesomatic: fix global loaded check
+* bugsnag: fix global loaded check
+* clicktale: fix global loaded check
+* clicky: fix global loaded check
+* drip: fix global loaded check
+* hittail: fix global loaded check
+* intercom: fix global loaded check
+* kissmetrics: fix global loaded check
+* mousestats: fix global loaded check
+* sentry: fix global loaded check
+* snapengage: fix global loaded check
+
 0.2.0 - November 11, 2013
 -------------------------
 * bugsnag: add bugsnag integration

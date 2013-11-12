@@ -42,7 +42,11 @@ describe('MouseStats', function () {
   describe('#loaded', function () {
     it('should test window.msaa', function () {
       assert(!mousestats.loaded());
+      window.msaa = document.createElement('div');
+      assert(!mousestats.loaded());
       window.msaa = {};
+      assert(!mousestats.loaded());
+      window.msaa = function(){};
       assert(mousestats.loaded());
     });
   });

@@ -60,7 +60,11 @@ describe('ClickTale', function () {
   describe('#loaded', function () {
     it('should test window.ClickTale', function () {
       assert(!clicktale.loaded());
+      window.ClickTale = document.createElement('div');
+      assert(!clicktale.loaded());
       window.ClickTale = {};
+      assert(!clicktale.loaded());
+      window.ClickTale = function(){};
       assert(clicktale.loaded());
     });
   });

@@ -44,6 +44,8 @@ describe('Bugsnag', function () {
   describe('#loaded', function () {
     it('should test window.Bugsnag', function () {
       assert(!bugsnag.loaded());
+      window.Bugsnag = document.createElement('div');
+      assert(!bugsnag.loaded());
       window.Bugsnag = {};
       assert(bugsnag.loaded());
     });

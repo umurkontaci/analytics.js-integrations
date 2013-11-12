@@ -45,7 +45,9 @@ describe('Intercom', function () {
   describe('#loaded', function () {
     it('should test window.Intercom', function () {
       assert(!intercom.loaded());
-      window.Intercom = {};
+      window.Intercom = document.createElement('div');
+      assert(!intercom.loaded());
+      window.Intercom = function(){};
       assert(intercom.loaded());
     });
   });

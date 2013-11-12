@@ -34,6 +34,8 @@ describe('SnapEngage', function () {
   describe('#loaded', function () {
     it('should test window.SnapABug', function () {
       assert(!snapengage.loaded());
+      window.SnapABug = document.createElement('div');
+      assert(!snapengage.loaded());
       window.SnapABug = {};
       assert(snapengage.loaded());
     });

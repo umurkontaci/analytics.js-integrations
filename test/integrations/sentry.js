@@ -40,6 +40,8 @@ describe('Sentry', function () {
   describe('#loaded', function () {
     it('should test window.Raven', function () {
       assert(!sentry.loaded());
+      window.Raven = document.createElement('div');
+      assert(!sentry.loaded());
       window.Raven = {};
       assert(sentry.loaded());
     });

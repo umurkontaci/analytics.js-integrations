@@ -61,6 +61,8 @@ describe('Drip', function () {
   describe('#loaded', function () {
     it('should test window.dc', function () {
       assert(!drip.loaded());
+      window.dc = document.createElement('div');
+      assert(!drip.loaded());
       window.dc = {};
       assert(drip.loaded());
     });
