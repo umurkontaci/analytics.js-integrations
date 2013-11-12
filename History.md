@@ -1,3 +1,7 @@
+0.2.2 - November 12, 2013
+-------------------------
+* optimizely: fix case where snippet does not exist
+
 0.2.1 - November 12, 2013
 -------------------------
 * awesomatic: fix global loaded check
