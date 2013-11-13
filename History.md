@@ -1,3 +1,7 @@
+0.2.3 - November 13, 2013
+-------------------------
+* adroll: fix custom data key name
+
 0.2.2 - November 12, 2013
 -------------------------
 * optimizely: fix case where snippet does not exist

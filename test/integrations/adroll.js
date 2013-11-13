@@ -49,10 +49,10 @@ describe('AdRoll', function () {
       assert(window.adroll_pix_id === settings.pixId);
     });
 
-    it('should set custom data', function () {
-      analytics.user().identify('id', { trait: true });
+    it('should set a user id', function () {
+      analytics.user().identify('id');
       adroll.initialize();
-      assert(equal(window.adroll_custom_data, { id: 'id', trait: true }));
+      assert(equal(window.adroll_custom_data, { USER_ID: 'id' }));
     });
 
     it('should set window.__adroll_loaded', function () {
