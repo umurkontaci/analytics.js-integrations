@@ -31,7 +31,7 @@
     "timoxley/next-tick": "0.0.2",
     "yields/slug": "1.1.0",
     "visionmedia/batch": "0.5.0",
-    "visionmedia/debug": "cfd9c65"
+    "visionmedia/debug": "0.7.3"
   },
   "development": {
     "component/jquery": "*",
