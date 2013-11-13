@@ -15,7 +15,6 @@ describe('Woopra', function () {
   beforeEach(function () {
     analytics.use(Woopra);
     woopra = new Woopra.Integration(settings);
-    woopra.initialize(); // noop
   });
 
   afterEach(function () {
@@ -25,7 +24,6 @@ describe('Woopra', function () {
   it('should have the right settings', function () {
     test(woopra)
       .name('Woopra')
-      .assumesPageview()
       .readyOnLoad()
       .global('woopra')
       .option('domain', '');

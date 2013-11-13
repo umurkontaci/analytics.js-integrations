@@ -1,3 +1,7 @@
+0.2.3 - November 12, 2013
+-------------------------
+* woopra: remove assumesPageview
+
 0.2.2 - November 12, 2013
 -------------------------
 * optimizely: fix case where snippet does not exist
