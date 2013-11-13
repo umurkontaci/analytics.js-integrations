@@ -1,6 +1,10 @@
-0.2.3 - November 13, 2013
+0.2.4 - November 13, 2013
 -------------------------
 * adroll: fix custom data key name
+
+0.2.3 - November 12, 2013
+-------------------------
+* woopra: remove assumesPageview
 
 0.2.2 - November 12, 2013
 -------------------------

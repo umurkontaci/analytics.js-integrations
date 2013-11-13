@@ -2,7 +2,7 @@
   "name": "integrations",
   "repo": "segmentio/analytics.js-integrations",
   "description": "All of the third-party analytics.js integrations.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "MIT",
   "keywords": ["analytics.js", "integrations", "analytics", "custom"],
   "dependencies": {
@@ -31,7 +31,7 @@
     "timoxley/next-tick": "0.0.2",
     "yields/slug": "1.1.0",
     "visionmedia/batch": "0.5.0",
-    "visionmedia/debug": "cfd9c65"
+    "visionmedia/debug": "0.7.3"
   },
   "development": {
     "component/jquery": "*",
