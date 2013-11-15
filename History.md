@@ -1,3 +1,7 @@
+0.2.5 - November 14, 2013
+-------------------------
+* heap: adding fixes for heap snippet
+
 0.2.4 - November 13, 2013
 -------------------------
 * adroll: fix custom data key name
