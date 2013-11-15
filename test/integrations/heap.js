@@ -4,6 +4,7 @@ describe('Heap', function () {
   var analytics = window.analytics || require('analytics');
   var analytics = require('analytics');
   var assert = require('assert');
+  var each = require('each');
   var equal = require('equals');
   var Heap = require('integrations/lib/heap');
   var sinon = require('sinon');
@@ -43,6 +44,13 @@ describe('Heap', function () {
       assert(!window.heap);
       heap.initialize();
       assert(window.heap);
+    });
+
+    it('should stub window.heap with the right methods', function () {
+      var methods = ['identify', 'track'];
+      assert(!window.heap);
+      heap.initialize();
+      each(methods, function (method) { assert(window.heap[method]); });
     });
 
     it('should set window._heapid', function () {
