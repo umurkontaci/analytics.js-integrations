@@ -13,8 +13,8 @@ components: component.json
 	@$(component) install --dev
 
 kill:
-	@test ! -s test/pid.txt || kill `cat test/pid.txt`
-	@rm -f test/pid.txt
+	@-test ! -s test/pid.txt || kill `cat test/pid.txt`
+	@-rm -f test/pid.txt
 
 node_modules: package.json
 	@npm install
