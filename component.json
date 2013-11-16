@@ -13,7 +13,7 @@
   "dependencies": {
     "component/clone": "0.1.0",
     "component/domify": "1.1.1",
-    "component/each": "0.1.0",
+    "component/each": "0.0.1",
     "component/once": "0.0.1",
     "component/type": "1.0.0",
     "component/url": "0.1.0",
