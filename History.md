@@ -1,3 +1,7 @@
+0.2.6 - November 15, 2013
+-------------------------
+* updating dependencies
+
 0.2.5 - November 14, 2013
 -------------------------
 * heap: adding fixes for heap snippet
