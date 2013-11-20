@@ -1,3 +1,7 @@
+0.2.8 - November 20, 2013
+-------------------------
+* hubspot: update CDN url
+
 0.2.7 - November 20, 2013
 -------------------------
 * evergage: add tracking of page name and properties
