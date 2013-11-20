@@ -180,16 +180,14 @@ describe('Evergage', function () {
 
     it('should send a page view', function () {
       evergage.page();
-      assert(window._aaq.push.calledWith(['namePage', undefined]));
+      assert(!window._aaq.push.called);
       assert(window.Evergage.init.calledWith(true));
     });
 
     it('should send page properties', function () {
-      evergage.page('category', 'name', {
-        pageAttribute: 'pageAttributeValue'
-      });
-      assert(window._aaq.push.calledWith(['setCustomField', 'pageAttribute', 'pageAttributeValue', 'page']));
+      evergage.page('category', 'name', { property: true });
       assert(window._aaq.push.calledWith(['namePage', 'name']));
+      assert(window._aaq.push.calledWith(['setCustomField', 'property', true, 'page']));
       assert(window.Evergage.init.calledWith(true));
     });
   });

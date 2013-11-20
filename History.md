@@ -1,3 +1,7 @@
+0.2.7 - November 20, 2013
+-------------------------
+* evergage: add tracking of page name and properties
+
 0.2.6 - November 15, 2013
 -------------------------
 * updating dependencies
