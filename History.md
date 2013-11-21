@@ -1,3 +1,7 @@
+0.2.10 - November 21, 2013
+--------------------------
+* optimizely: adding .page() support
+
 0.2.9 - November 21, 2013
 -------------------------
 * awesomatic: fix identify logic
