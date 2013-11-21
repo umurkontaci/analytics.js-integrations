@@ -88,4 +88,21 @@ describe('Optimizely', function () {
     });
   });
 
+  describe('#page', function () {
+    beforeEach(function () {
+      optimizely.initialize();
+      window.optimizely.push = sinon.spy();
+    });
+
+    it('should send an event for a named page', function () {
+      optimizely.page('Home');
+      assert(window.optimizely.push.calledWith(['trackEvent', 'Viewed Home Page', {}]));
+    });
+
+    it('should send an event for a named and categorized page', function () {
+      optimizely.page('Blog', 'New Integration');
+      assert(window.optimizely.push.calledWith(['trackEvent', 'Viewed Blog New Integration Page']));
+    });
+  });
+
 });
