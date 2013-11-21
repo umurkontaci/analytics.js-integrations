@@ -1,3 +1,7 @@
+0.2.9 - November 21, 2013
+-------------------------
+* awesomatic: fix identify logic
+
 0.2.8 - November 20, 2013
 -------------------------
 * hubspot: update CDN url

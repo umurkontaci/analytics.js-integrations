@@ -4,8 +4,10 @@ describe('Awesomatic', function () {
   var analytics = require('analytics');
   var assert = require('assert');
   var Awesomatic = require('integrations/lib/awesomatic');
+  var equal = require('equals');
   var sinon = require('sinon');
   var test = require('integration-tester');
+  var when = require('when');
 
   var awesomatic;
   var settings = {
@@ -27,6 +29,9 @@ describe('Awesomatic', function () {
       .name('Awesomatic')
       .assumesPageview()
       .global('Awesomatic')
+      .global('AwesomaticSettings')
+      .global('AwsmSetup')
+      .global('AwsmTmp')
       .option('appId', '');
   });
 
@@ -35,6 +40,21 @@ describe('Awesomatic', function () {
       awesomatic.load = sinon.spy();
       awesomatic.initialize();
       assert(awesomatic.load.called);
+    });
+
+    it('should initialize with the current user', function (done) {
+      analytics.user().identify('id', { trait: true });
+      awesomatic.initialize();
+      awesomatic.once('load', function () {
+        when(function () { return window.AwesomaticSettings; }, function () {
+          assert(equal(window.AwesomaticSettings, {
+            appId: settings.appId,
+            user_id: 'id',
+            trait: true
+          }));
+          done();
+        });
+      });
     });
   });
 
@@ -62,27 +82,6 @@ describe('Awesomatic', function () {
         assert(awesomatic.loaded());
         done();
       });
-    });
-  });
-
-  describe('#identify', function () {
-    beforeEach(function () {
-      window.Awesomatic = { load: sinon.spy() };
-    });
-
-    it('should send an id', function () {
-      awesomatic.identify('id', {});
-      assert(window.Awesomatic.load.calledWith({ userId: 'id' }));
-    });
-
-    it('should send an id and properties', function () {
-      awesomatic.identify('id', { property: true });
-      assert(window.Awesomatic.load.calledWith({ userId: 'id', property: true }));
-    });
-
-    it('should require an id or email', function () {
-      awesomatic.identify(null, { property: true });
-      assert(!window.Awesomatic.load.called);
     });
   });
 });
