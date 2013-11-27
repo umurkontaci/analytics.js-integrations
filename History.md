@@ -1,3 +1,7 @@
+0.2.11 - November 26, 2013
+--------------------------
+* updating `analytics.js-integration` to `0.1.5`
+
 0.2.10 - November 21, 2013
 --------------------------
 * optimizely: adding .page() support
