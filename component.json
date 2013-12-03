@@ -2,7 +2,7 @@
   "name": "integrations",
   "repo": "segmentio/analytics.js-integrations",
   "description": "All of the third-party analytics.js integrations.",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "license": "MIT",
   "keywords": [
     "analytics.js",
@@ -31,6 +31,7 @@
     "segmentio/load-script": "0.1.0",
     "segmentio/on-body": "0.0.1",
     "segmentio/on-error": "0.1.0",
+    "segmentio/to-iso-string": "0.0.1",
     "segmentio/to-unix-timestamp": "0.0.1",
     "segmentio/use-https": "0.1.0",
     "timoxley/next-tick": "0.0.2",

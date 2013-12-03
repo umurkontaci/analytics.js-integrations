@@ -235,6 +235,12 @@ describe('Mixpanel', function () {
       assert(window.mixpanel.track.calledWith('event', { property: true }));
     });
 
+    it('should convert dates to iso strings', function () {
+      var date = new Date();
+      mixpanel.track('event', { date: date });
+      assert(window.mixpanel.track.calledWith('event', { date: date.toISOString() }));
+    });
+
     it('should send a revenue property to Mixpanel People', function () {
       mixpanel.options.people = true;
       mixpanel.track('event', { revenue: 9.99 });

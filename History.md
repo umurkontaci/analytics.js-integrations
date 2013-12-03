@@ -1,3 +1,7 @@
+0.2.10 - December 2, 2013
+-------------------------
+* mixpanel: convert date properties to ISO string
+
 0.2.9 - November 21, 2013
 -------------------------
 * awesomatic: fix identify logic
