@@ -1,6 +1,10 @@
+0.2.12 - December 2, 2013
+-------------------------
+* mixpanel: fix `track` date conversion
+
 0.2.11 - November 26, 2013
 --------------------------
-* updating `analytics.js-integration` to `0.1.5`
+* update `analytics.js-integration` to `0.1.5`
 
 0.2.10 - November 21, 2013
 --------------------------

@@ -3,6 +3,7 @@ describe('Mixpanel', function () {
 
   var analytics = require('analytics');
   var assert = require('assert');
+  var iso = require('to-iso-string');
   var Mixpanel = require('integrations/lib/mixpanel');
   var sinon = require('sinon');
   var test = require('integration-tester');
@@ -239,6 +240,12 @@ describe('Mixpanel', function () {
       mixpanel.options.people = true;
       mixpanel.track('event', { revenue: 9.99 });
       assert(window.mixpanel.people.track_charge.calledWith(9.99));
+    });
+
+    it('should convert dates to iso strings', function () {
+      var date = new Date();
+      mixpanel.track('event', { date: date });
+      assert(window.mixpanel.track.calledWith('event', { date: iso(date) }));
     });
   });
 
